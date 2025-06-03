@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('staff_auth', function (Blueprint $table) {
             $table->id();
+            $table->string('username')->unique();
+            $table->string('password');
+            $table->boolean('is_active')->default(true);
+            $table->softDeletes();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
