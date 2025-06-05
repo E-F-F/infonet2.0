@@ -29,9 +29,9 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->date('updated_at')->nullable();
             $table->unsignedBigInteger('approved_by')->nullable();
-            $table->dateTime('approved_datetime')->nullable();
+            $table->dateTime('approved_at')->nullable();
             $table->unsignedBigInteger('rejected_by')->nullable();
-            $table->dateTime('rejected_datetime')->nullable();
+            $table->dateTime('rejected_at')->nullable();
             $table->foreign('created_by')->references('id')->on('hrms_staff')->nullOnDelete();
             $table->foreign('updated_by')->references('id')->on('hrms_staff')->nullOnDelete();
             $table->foreign('approved_by')->references('id')->on('hrms_staff')->nullOnDelete();
