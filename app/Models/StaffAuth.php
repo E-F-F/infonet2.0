@@ -23,6 +23,13 @@ class StaffAuth extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
     // Relationships
 
     public function staffAccess()

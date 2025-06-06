@@ -72,11 +72,11 @@ class HRMSStaffController extends Controller
         ];
 
         $employmentRules = [
-            'branch_id'             => 'required|exists:branches,id',
-            'hrms_designation_id'   => 'required|exists:hrms_designations,id',
-            'hrms_leave_rank_id'    => 'required|exists:hrms_leave_ranks,id',
-            'hrms_pay_group_id'     => 'required|exists:hrms_pay_groups,id',
-            'hrms_appraisal_type_id' => 'required|exists:hrms_appraisal_types,id',
+            'branch_id'             => 'required|exists:branch,id',
+            'hrms_designation_id'   => 'required|exists:hrms_designation,id',
+            'hrms_leave_rank_id'    => 'required|exists:hrms_leave_rank,id',
+            'hrms_pay_group_id'     => 'required|exists:hrms_pay_group,id',
+            'hrms_appraisal_type_id' => 'required|exists:hrms_appraisal_type,id',
             'employee_number'       => 'required|string|max:50|unique:hrms_staff_employment,employee_number',
             'joining_date'          => 'required|date',
         ];
@@ -115,7 +115,7 @@ class HRMSStaffController extends Controller
             // 5. Create the main staff record, linking personal and employment IDs
             // For 'staff_auth_id', you might generate a UUID, or link to an existing user authentication ID.
             $staffAuthData = $request->only(array_keys($authRules)); // Adjust this based on how you handle authentication.
-
+            
             $staffAuth = StaffAuth::create($staffAuthData);
 
             $staff = HRMSStaff::create([
