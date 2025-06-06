@@ -82,13 +82,6 @@
 
                 <!-- User/Auth Links (Right side) -->
                 <div class="flex items-center space-x-3 text-sm">
-                    <a href="#"
-                        class="text-gray-600 hover:text-gray-800 font-medium hidden sm:block">Dashboard</a>
-                    {{-- Removed the general "Settings" link as it's now covered by specific HR Management dropdown --}}
-                    <a href="#"
-                        class="inline-flex items-center justify-center px-2.5 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition duration-150 ease-in-out">
-                        Login
-                    </a>
                 </div>
             </div>
         </header>
@@ -115,7 +108,47 @@
                                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
                                             </path>
                                         </svg>
-                                        HR Management
+                                        Staff Management
+                                    </span>
+                                    <svg class="h-3 w-3 transform transition-transform duration-200"
+                                        :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                                <ul x-show="open" x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="transform opacity-0 scale-95"
+                                    x-transition:enter-end="transform opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="transform opacity-100 scale-100"
+                                    x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
+                                    <li>
+                                        <a href="{{ route('hrms.staff.index') }}"
+                                            class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
+                                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM12 14v5m-4 0h8a2 2 0 002-2v-5a2 2 0 00-2-2H8a2 2 0 00-2 2v5z">
+                                                </path>
+                                            </svg>
+                                            Staff
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li x-data="{ open: false }" class="mb-2">
+                                <a @click="open = !open" href="#"
+                                    class="flex items-center p-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-md transition duration-200 ease-in-out justify-between cursor-pointer text-sm">
+                                    <span class="flex items-center">
+                                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
+                                            </path>
+                                        </svg>
+                                        Leave Management
                                     </span>
                                     <svg class="h-3 w-3 transform transition-transform duration-200"
                                         :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
@@ -142,7 +175,7 @@
                                             Leave Ranks
                                         </a>
                                     </li>
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('hrms.staff.create') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
@@ -153,7 +186,7 @@
                                             </svg>
                                             Add Staff
                                         </a>
-                                    </li>
+                                    </li> --}}
                                 </ul>
                             </li>
 

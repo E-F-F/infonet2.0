@@ -15,40 +15,20 @@ use Illuminate\Validation\ValidationException;
 
 class HRMSStaffController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        // This is a placeholder. You might display a list of staff here.
-        // For now, let's assume it renders a view for adding staff if no other method is specified.
-        return view('hrms::staff.create'); // Assuming a view like 'resources/views/hrms/staff/create.blade.php'
+        $staff = HRMSStaff::with(['personal', 'employment'])->orderBy('id')->paginate(10);
+        return view('hrms::staff.index', compact('staff'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        // This method directly prepares and shows the form for adding staff.
-        // This would render the HTML form you provided earlier.
-        return view('hrms::staff.create'); // Assuming your form is in 'resources/views/hrms/staff/create.blade.php'
+        return view('hrms::staff.create');
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
-        // 1. Define validation rules for both personal and employment data
         $authRules = [
             'username'  =>  'required|string|max:255',
             'password'  =>  'required|string|min:8|max:255',
@@ -115,7 +95,7 @@ class HRMSStaffController extends Controller
             // 5. Create the main staff record, linking personal and employment IDs
             // For 'staff_auth_id', you might generate a UUID, or link to an existing user authentication ID.
             $staffAuthData = $request->only(array_keys($authRules)); // Adjust this based on how you handle authentication.
-            
+
             $staffAuth = StaffAuth::create($staffAuthData);
 
             $staff = HRMSStaff::create([

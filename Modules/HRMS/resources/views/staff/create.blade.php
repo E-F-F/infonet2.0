@@ -1,23 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Staff Member</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            /* Light gray background */
-        }
-    </style>
-</head>
-
-<body class="antialiased">
+<x-hrms::layouts.master>
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl border border-gray-200">
             <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Add New Staff Member</h1>
@@ -301,6 +282,4 @@
             </form>
         </div>
     </div>
-</body>
-
-</html>
+</x-hrms::layouts.master>

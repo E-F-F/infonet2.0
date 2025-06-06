@@ -17,14 +17,8 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
         });
 
         Route::controller(HRMSStaffController::class)->group(function () {
-            // Route to display the form for creating a new staff member.
-            // URL: /hrms/staff/create
-            // Name: hrms.staff.create
+            Route::get('staff', 'index')->name('staff.index');
             Route::get('staff/create', 'create')->name('staff.create');
-
-            // Route to store a newly created staff member in the database.
-            // URL: /hrms/staff
-            // Name: hrms.staff.store
             Route::post('staff', 'store')->name('staff.store');
         });
     });

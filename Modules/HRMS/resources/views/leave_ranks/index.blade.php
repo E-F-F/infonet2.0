@@ -1,6 +1,6 @@
 <x-hrms::layouts.master>
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Manage Leave Ranks</h1>
+        <h1 class="text-xl font-bold text-gray-800 mb-6">Manage Leave Ranks</h1>
 
         {{-- Inline Create Form --}}
         <h2 class="text-lg font-semibold text-gray-700 mb-4">Add New Leave Rank</h2>
