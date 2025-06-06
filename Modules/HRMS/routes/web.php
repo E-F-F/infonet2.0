@@ -3,28 +3,29 @@
 use Illuminate\Support\Facades\Route;
 use Modules\HRMS\Http\Controllers\HRMSController;
 use Modules\HRMS\Http\Controllers\HRMSStaffController;
+use Modules\HRMS\Http\Controllers\HRMSLeaveRankController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('hrms', HRMSController::class)->names('hrms');
+Route::middleware(['check.system.access:hrms'])->group(function () {
     Route::group(['prefix' => 'hrms', 'as' => 'hrms.'], function () {
+        Route::controller(HRMSLeaveRankController::class)->group(function () {
+            Route::get('leave-ranks', 'index')->name('leave_ranks.index');
+            Route::get('leave-ranks/create', 'create')->name('leave_ranks.create');
+            Route::post('leave-ranks', 'store')->name('leave_ranks.store');
+            Route::get('leave-ranks/{leaveRank}/edit', 'edit')->name('leave_ranks.edit');
+            Route::put('leave-ranks/{leaveRank}', 'update')->name('leave_ranks.update');
+            Route::delete('leave-ranks/{leaveRank}', 'destroy')->name('leave_ranks.destroy');
+        });
 
-        // Route to display the form for creating a new staff member.
-        // This maps to the `create` method in `StaffController`.
-        // URL: /hrms/staff/create
-        // Name: hrms.staff.create
-        Route::get('staff/create', [HRMSStaffController::class, 'create'])->name('staff.create');
+        Route::controller(HRMSStaffController::class)->group(function () {
+            // Route to display the form for creating a new staff member.
+            // URL: /hrms/staff/create
+            // Name: hrms.staff.create
+            Route::get('staff/create', 'create')->name('staff.create');
 
-        // Route to store a newly created staff member in the database.
-        // This uses a POST request and maps to the `store` method in `StaffController`.
-        // URL: /hrms/staff
-        // Name: hrms.staff.store
-        Route::post('staff', [HRMSStaffController::class, 'store'])->name('staff.store');
-
-        // Optional: If you want a route for the index method (to display a list of staff),
-        // you would add it like this:
-        // Route::get('staff', [StaffController::class, 'index'])->name('staff.index');
-
-        
-
+            // Route to store a newly created staff member in the database.
+            // URL: /hrms/staff
+            // Name: hrms.staff.store
+            Route::post('staff', 'store')->name('staff.store');
+        });
     });
 });

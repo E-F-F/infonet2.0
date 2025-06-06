@@ -4,23 +4,24 @@ namespace Modules\HRMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 // use Modules\HRMS\Database\Factories\HRMSLeaveRankFactory;
 
 class HRMSLeaveRank extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      */
     protected $table = 'hrms_leave_rank';
+
     protected $fillable = [
         'name',
         'is_active'
     ];
 
-    // protected static function newFactory(): HRMSLeaveRankFactory
-    // {
-    //     // return HRMSLeaveRankFactory::new();
-    // }
+    // Optional: protect or allow fields
+    protected $dates = ['deleted_at'];
 }
