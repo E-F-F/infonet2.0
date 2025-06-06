@@ -207,7 +207,7 @@
                             <select name="branch_id" id="branch_id" required
                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option value="">Select Branch</option>
-                                <!-- In a real application, these options would be dynamically loaded from the 'branches' table -->
+                                <!-- In a real application, these options would be dynamically loaded from the 'branch' table -->
                                 <option value="1" {{ old('branch_id') == '1' ? 'selected' : '' }}>Main Office
                                 </option>
                                 <option value="2" {{ old('branch_id') == '2' ? 'selected' : '' }}>North Branch
@@ -223,7 +223,7 @@
                             <select name="hrms_designation_id" id="hrms_designation_id" required
                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option value="">Select Designation</option>
-                                <!-- Dynamically loaded from 'hrms_designations' table -->
+                                <!-- Dynamically loaded from 'hrms_designation' table -->
                                 <option value="1" {{ old('hrms_designation_id') == '1' ? 'selected' : '' }}>
                                     Software Engineer</option>
                                 <option value="2" {{ old('hrms_designation_id') == '2' ? 'selected' : '' }}>HR
