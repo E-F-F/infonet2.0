@@ -24,5 +24,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // you would add it like this:
         // Route::get('staff', [StaffController::class, 'index'])->name('staff.index');
 
+        
+
     });
 });
