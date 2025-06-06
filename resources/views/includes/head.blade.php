@@ -2,7 +2,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"> {{-- Add for responsive design --}}
 <meta name="description" content="Your application description."> {{-- Make more descriptive --}}
 <meta name="author" content="Your Name or Company Name"> {{-- Changed 'Saquib' to a placeholder --}}
-<title>My Blue & White Dashboard</title> {{-- Add a title --}}
+
+<title>Infonet v2.0</title> {{-- Add a title --}}
 
 {{-- Tailwind CSS CDN (for development/quick testing) --}}
 {{-- For production, compile your Tailwind CSS to avoid FOUC and optimize size --}}
