@@ -5,6 +5,7 @@ use Modules\HRMS\Http\Controllers\HRMSController;
 use Modules\HRMS\Http\Controllers\HRMSStaffController;
 use Modules\HRMS\Http\Controllers\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
+use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
 
 Route::middleware(['check.system.access:hrms'])->group(function () {
     Route::group(['prefix' => 'hrms', 'as' => 'hrms.'], function () {
@@ -29,6 +30,12 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
             Route::post('/', [HRMSEventTypeController::class, 'store'])->name('store');
             Route::put('/{id}', [HRMSEventTypeController::class, 'update'])->name('update');
             Route::delete('/{id}', [HRMSEventTypeController::class, 'destroy'])->name('destroy');
+        });
+        Route::prefix('event')->name('event')->group(function () {
+            Route::get('/', [HRMSEventController::class, 'index'])->name('index');
+            // Route::post('/', [HRMSEventController::class, 'store'])->name('store');
+            // Route::put('/{id}', [HRMSEventController::class, 'update'])->name('update');
+            // Route::delete('/{id}', [HRMSEventController::class, 'destroy'])->name('destroy');
         });
     });
 });

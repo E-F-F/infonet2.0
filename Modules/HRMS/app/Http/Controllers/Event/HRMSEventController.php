@@ -4,12 +4,21 @@ namespace Modules\HRMS\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\HRMS\Models\HRMSEvent;
 
 class HRMSEventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('hrms::event_management.events.index');
+        $query = $request->input('q');
+
+        $events = HRMSEvent::when($query, function ($q) use ($query) {
+            $q->where('title', 'like', '%' . $query . '%');
+        })
+            ->latest()
+            ->paginate(10);
+
+        return view('hrms::event_management.events.index', compact('events', 'query'));
     }
 
     public function show($id)

@@ -18,26 +18,31 @@ class HRMSEventTypeController extends Controller
     public function show($id)
     {
         $eventType = HRMSEventType::findOrFail($id);
-        return view('hrms::event_management.event_types.show', compact('eventType'));
+        return response()->json($eventType);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:hrms_event_type,name',
-            // 'is_active' => 'boolean',
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'message' => 'Name has been taken',
+            ], 422);
         }
 
-        HRMSEventType::create([
+        $eventType = HRMSEventType::create([
             'name' => $request->name,
-            // 'is_active' => $request->is_active ?? true,
+            'is_active' => $request->has('is_active'), // Check if checkbox was sent
         ]);
 
-        return redirect()->route('hrms.event-types.index')->with('success', 'Event type created.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Event type added successfully!',
+            'eventType' => $eventType // Return the created event type
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -46,19 +51,19 @@ class HRMSEventTypeController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:hrms_event_type,name,' . $id,
-            // 'is_active' => 'boolean',
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'message' => 'Name has been taken',
+            ], 422);
         }
 
         $eventType->update([
             'name' => $request->name,
-            // 'is_active' => $request->is_active ?? true,
         ]);
 
-        return redirect()->route('hrms.event-types.index')->with('success', 'Event type updated.');
+        return response()->json(['success' => true, 'eventType' => $eventType]);
     }
 
     public function destroy($id)
@@ -66,6 +71,6 @@ class HRMSEventTypeController extends Controller
         $eventType = HRMSEventType::findOrFail($id);
         $eventType->delete();
 
-        return redirect()->route('hrms.event-types.index')->with('success', 'Event type deleted.');
+        return response()->json(['success' => true, 'message' => 'Event type deleted successfully']);
     }
 }
