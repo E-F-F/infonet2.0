@@ -22,6 +22,8 @@
 
     <!-- Tailwind via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    
 
     <style>
         body {
@@ -264,6 +266,7 @@
 
     {{-- Alpine.js for sidebar toggle --}}
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     {{-- Extra scripts section --}}
     @stack('scripts')
 </body>
