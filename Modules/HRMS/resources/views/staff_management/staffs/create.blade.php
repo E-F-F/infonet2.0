@@ -1,6 +1,6 @@
 <x-hrms::layouts.master>
     <div class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-4xl border border-gray-200">
+        <div class="bg-white p-8 rounded-xl shadow-xl w-full border border-gray-200">
             <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Add New Staff Member</h1>
 
             <!-- Session Messages -->

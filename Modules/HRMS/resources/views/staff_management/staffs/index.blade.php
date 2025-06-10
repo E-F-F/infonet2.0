@@ -1,5 +1,5 @@
 <x-hrms::layouts.master>
-    <div class="w-full max-w-4xl bg-white shadow-lg rounded-xl overflow-hidden">
+    <div class="w-full shadow-lg rounded-xl overflow-hidden">
         <!-- Table Header with Search and Filter -->
         <div
             class="p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-50 border-b border-gray-200">
