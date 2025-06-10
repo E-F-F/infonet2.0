@@ -6,6 +6,8 @@ use Modules\HRMS\Http\Controllers\HRMSStaffController;
 use Modules\HRMS\Http\Controllers\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
+use Modules\HRMS\Http\Controllers\Training\HRMSTrainingTypeController;
+use Modules\HRMS\Http\Controllers\Training\HRMSTrainingAwardTypeController;
 
 Route::middleware(['check.system.access:hrms'])->group(function () {
     Route::group(['prefix' => 'hrms', 'as' => 'hrms.'], function () {
@@ -23,19 +25,43 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
             Route::get('staff/create', 'create')->name('staff.create');
             Route::post('staff', 'store')->name('staff.store');
         });
-
-        // web.php or routes file
-        Route::prefix('event-types')->name('event-types.')->group(function () {
-            Route::get('/', [HRMSEventTypeController::class, 'index'])->name('index');
-            Route::post('/', [HRMSEventTypeController::class, 'store'])->name('store');
-            Route::put('/{id}', [HRMSEventTypeController::class, 'update'])->name('update');
-            Route::delete('/{id}', [HRMSEventTypeController::class, 'destroy'])->name('destroy');
-        });
-        Route::prefix('event')->name('event')->group(function () {
-            Route::get('/', [HRMSEventController::class, 'index'])->name('index');
-            // Route::post('/', [HRMSEventController::class, 'store'])->name('store');
-            // Route::put('/{id}', [HRMSEventController::class, 'update'])->name('update');
-            // Route::delete('/{id}', [HRMSEventController::class, 'destroy'])->name('destroy');
-        });
+        // Event
+        Route::controller(HRMSEventController::class)
+            ->prefix('event')
+            ->name('event.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                // Route::post('/', 'store')->name('store');
+                // Route::put('/{id}', 'update')->name('update');
+                // Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+        Route::controller(HRMSEventTypeController::class)
+            ->prefix('event-types')
+            ->name('event-types.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+        // Training
+        Route::controller(HRMSTrainingTypeController::class)
+            ->prefix('training-types')
+            ->name('training-types.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+        Route::controller(HRMSTrainingAwardTypeController::class)
+            ->prefix('training-award-types')
+            ->name('training-award-types.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
     });
 });
