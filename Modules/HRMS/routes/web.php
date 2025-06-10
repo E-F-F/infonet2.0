@@ -8,7 +8,7 @@ use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
 use Modules\HRMS\Http\Controllers\Training\HRMSTrainingTypeController;
 use Modules\HRMS\Http\Controllers\Training\HRMSTrainingAwardTypeController;
-
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveTypeController;
 Route::middleware(['check.system.access:hrms'])->group(function () {
     Route::group(['prefix' => 'hrms', 'as' => 'hrms.'], function () {
         Route::controller(HRMSLeaveRankController::class)->group(function () {
@@ -57,6 +57,16 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
         Route::controller(HRMSTrainingAwardTypeController::class)
             ->prefix('training-award-types')
             ->name('training-award-types.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+        // Leave
+        Route::controller(HRMSLeaveTypeController::class)
+            ->prefix('leave-types')
+            ->name('leave-types.')
             ->group(function () {
                 Route::get('/',  'index')->name('index');
                 Route::post('/', 'store')->name('store');
