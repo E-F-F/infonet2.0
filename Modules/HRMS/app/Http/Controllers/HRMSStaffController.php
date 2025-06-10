@@ -19,12 +19,12 @@ class HRMSStaffController extends Controller
     public function index()
     {
         $staff = HRMSStaff::with(['personal', 'employment'])->orderBy('id')->paginate(10);
-        return view('hrms::staff.index', compact('staff'));
+        return view('hrms::staff_management.staffs.index', compact('staff'));
     }
 
     public function create()
     {
-        return view('hrms::staff.create');
+        return view('hrms::staff_management.staffs.create');
     }
 
     public function store(Request $request)

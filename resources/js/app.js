@@ -1,12 +1,12 @@
 import './bootstrap';
 import 'flowbite';
 import Alpine from 'alpinejs';
-import $ from 'jquery'; // DataTables often requires jQuery
-import 'datatables.net'; // Core DataTables library
-import 'datatables.net-dt/css/jquery.dataTables.css'; // Default styling
+// import $ from 'jquery'; // DataTables often requires jQuery
+// import 'datatables.net'; // Core DataTables library
+// import 'datatables.net-dt/css/jquery.dataTables.css'; // Default styling
 
 // Optional: If you need to make jQuery global for some legacy scripts or specific plugins
-window.jQuery = window.$ = $;
+// window.jQuery = window.$ = $;
 
 
 window.Alpine = Alpine; // Optional: Makes Alpine globally available
