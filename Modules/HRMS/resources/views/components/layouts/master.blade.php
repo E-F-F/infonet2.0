@@ -161,7 +161,7 @@
                                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
                                             </path>
                                         </svg>
-                                        Attendance
+                                        Attendances
                                     </span>
                                     <svg class="h-3 w-3 transform transition-transform duration-200"
                                         :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
@@ -213,7 +213,7 @@
                                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
                                             </path>
                                         </svg>
-                                        Leave
+                                        Leaves
                                     </span>
                                     <svg class="h-3 w-3 transform transition-transform duration-200"
                                         :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
@@ -279,7 +279,7 @@
                                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
                                             </path>
                                         </svg>
-                                        Payroll
+                                        Payrolls
                                     </span>
                                     <svg class="h-3 w-3 transform transition-transform duration-200"
                                         :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
@@ -321,7 +321,7 @@
                                     </li>
                                 </ul>
                             </li>
-                            {{-- Event SideBar --}}
+                            {{-- Offences SideBar --}}
                             <li x-data="{ open: false }" class="mb-2">
                                 <a @click="open = !open" href="#"
                                     class="flex items-center p-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-md transition duration-200 ease-in-out justify-between cursor-pointer text-sm">
@@ -332,7 +332,7 @@
                                                 d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
                                             </path>
                                         </svg>
-                                        Event
+                                        Offences
                                     </span>
                                     <svg class="h-3 w-3 transform transition-transform duration-200"
                                         :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
@@ -348,7 +348,7 @@
                                     x-transition:leave-start="transform opacity-100 scale-100"
                                     x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
                                     <li>
-                                        <a href="{{ route('hrms.event.index') }}"
+                                        <a href="{{ route('hrms.pay-groups.index') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -356,20 +356,20 @@
                                                     d="M8 7v4a2 2 0 002 2h4a2 2 0 002-2V7m0 10a2 2 0 01-2 2H8a2 2 0 01-2-2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v12m-4 2h.01">
                                                 </path>
                                             </svg>
-                                            Event Listing
+                                            Pay Group
                                         </a>
                                     </li>
 
                                     <li>
-                                        <a href="{{ route('hrms.event-types.index') }}"
+                                        <a href="{{ route('hrms.appraisal-types.index') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM12 14v5m-4 0h8a2 2 0 002-2v-5a2 2 0 00-2-2H8a2 2 0 00-2 2v5z">
+                                                    d="M8 7v4a2 2 0 002 2h4a2 2 0 002-2V7m0 10a2 2 0 01-2 2H8a2 2 0 01-2-2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v12m-4 2h.01">
                                                 </path>
                                             </svg>
-                                            Event Type
+                                            Appraisal Type
                                         </a>
                                     </li>
                                 </ul>
@@ -434,6 +434,59 @@
                                                 </path>
                                             </svg>
                                             Training Award Listing
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {{-- Event SideBar --}}
+                            <li x-data="{ open: false }" class="mb-2">
+                                <a @click="open = !open" href="#"
+                                    class="flex items-center p-2 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-md transition duration-200 ease-in-out justify-between cursor-pointer text-sm">
+                                    <span class="flex items-center">
+                                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.525.322 1.018.8 1.485 1.5M12 12a2 2 0 100-4 2 2 0 000 4z">
+                                            </path>
+                                        </svg>
+                                        Event
+                                    </span>
+                                    <svg class="h-3 w-3 transform transition-transform duration-200"
+                                        :class="{ 'rotate-90': open }" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                                <ul x-show="open" x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="transform opacity-0 scale-95"
+                                    x-transition:enter-end="transform opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="transform opacity-100 scale-100"
+                                    x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
+                                    <li>
+                                        <a href="{{ route('hrms.event.index') }}"
+                                            class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
+                                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7v4a2 2 0 002 2h4a2 2 0 002-2V7m0 10a2 2 0 01-2 2H8a2 2 0 01-2-2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v12m-4 2h.01">
+                                                </path>
+                                            </svg>
+                                            Event Listing
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{{ route('hrms.event-types.index') }}"
+                                            class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
+                                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM12 14v5m-4 0h8a2 2 0 002-2v-5a2 2 0 00-2-2H8a2 2 0 00-2 2v5z">
+                                                </path>
+                                            </svg>
+                                            Event Type
                                         </a>
                                     </li>
                                 </ul>

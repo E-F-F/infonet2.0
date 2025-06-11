@@ -28,7 +28,14 @@ class HRMSStaffPersonal extends Model
         'religion',
         'race',
         'blood_group',
+        'work_email',
+        'phone_number',
         'home_address',
         'image_url',
     ];
+
+    public function staff()
+    {
+        return $this->hasOne(HRMSStaff::class);
+    }
 }

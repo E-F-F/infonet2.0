@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\HRMS\Http\Controllers\HRMSController;
-use Modules\HRMS\Http\Controllers\HRMSStaffController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSStaffController;
 // use Modules\HRMS\Http\Controllers\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
@@ -19,6 +19,7 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
 
         Route::controller(HRMSStaffController::class)->group(function () {
             Route::get('staff', 'index')->name('staff.index');
+            Route::get('staff/{id}', 'show')->name('staff.show');
             Route::get('staff/create', 'create')->name('staff.create');
             Route::post('staff', 'store')->name('staff.store');
         });
