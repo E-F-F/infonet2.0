@@ -29,9 +29,10 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
             ->name('event.')
             ->group(function () {
                 Route::get('/',  'index')->name('index');
-                // Route::post('/', 'store')->name('store');
-                // Route::put('/{id}', 'update')->name('update');
-                // Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::get('/{id}',  'show')->name('show');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
         Route::controller(HRMSEventTypeController::class)
             ->prefix('event-types')

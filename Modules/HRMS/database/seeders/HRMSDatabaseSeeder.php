@@ -4,6 +4,7 @@ namespace Modules\HRMS\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\HRMS\Models\HRMSAppraisalType;
+use Modules\HRMS\Models\HRMSEvent;
 use Modules\HRMS\Models\HRMSEventType;
 use Modules\HRMS\Models\HRMSLeaveRank;
 use Modules\HRMS\Models\HRMSLeaveType;
@@ -175,6 +176,90 @@ class HRMSDatabaseSeeder extends Seeder
             'staff_auth_id' => 1,
             'hrms_staff_personal_id' => 1,
             'hrms_staff_employment_id' => 1,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 1,
+            'title' => 'STAFF1',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'TWUHQ',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 2,
+            'title' => 'EVENT1',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'KKHQ',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 3,
+            'title' => 'EVENT2',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'UMKK1',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 3,
+            'title' => 'EVENT2',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'UMKK1',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 1,
+            'title' => 'EVENT2',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'UMKK1',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 2,
+            'title' => 'EVENT2',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'UMKK1',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
+        ]);
+        HRMSEvent::create([
+            'hrms_event_type_id' => 3,
+            'title' => 'EVENT2',
+            'start_date' => now(),
+            'end_date' => now(),
+            'event_company' => 'UM',
+            'event_branch' => 'UMKK1',
+            'event_venue' => 'Padang',
+            'remarks' => 'event something',
+            // 'activity_logs' => 'write something',
+            'is_active' => true,
         ]);
     }
 }

@@ -24,13 +24,19 @@ class HRMSStaffController extends Controller
                 // ALWAYS include the foreign key ('staff_id' or whatever links personal to staff)
                 $query->select('id', 'fullName', 'gender', 'image_url');
             },
+            'auth' => function ($query) {
+                // Select specific columns from the 'personal' relationship
+                // ALWAYS include the foreign key ('staff_id' or whatever links personal to staff)
+                $query->select('id', 'fullName', 'gender', 'image_url');
+            },
+            
             // 'employment' => function ($query) {
             //     // Select specific columns from the 'employment' relationship
             //     // ALWAYS include the foreign key ('staff_id' or whatever links employment to staff)
             //     $query->select('id', 'branch_id', 'hrms_designation_id', 'hrms_leave_rank_id', 'hrms_pay_group_id', );
             // },
         ])->orderBy('id')->paginate(10);
-        return view('hrms::index', compact('staff'));
+        return view('hrms::staff_management.staffs.index', compact('staff'));
     }
 
     public function show($id)

@@ -27,7 +27,11 @@
                 <tbody>
                     @forelse ($events as $event)
                         <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">{{ $event->title }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{{ route('hrms.event.show', $event->id) }}" class="block text-blue-600 hover:underline">
+                                    {{ $event->title }}
+                                </a>
+                            </td>
                             <td class="px-6 py-4">{{ $event->start_date }}</td>
                             <td class="px-6 py-4">{{ $event->end_date }}</td>
                             <td class="px-6 py-4">{{ $event->event_company }}</td>
@@ -41,8 +45,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                {{-- <a href="{{ route('hrms.events.show', $event->id) }}"
-                                    class="text-blue-600 hover:underline">View</a> --}}
+                                <a href="{{ route('hrms.event.show', $event->id) }}" class="text-blue-600 hover:underline">View</a>
                             </td>
                         </tr>
                     @empty
