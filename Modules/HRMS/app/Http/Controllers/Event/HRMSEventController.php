@@ -26,6 +26,11 @@ class HRMSEventController extends Controller
         return view('hrms::event_management.events.index', compact('events', 'query'));
     }
 
+    public function create()
+    {
+        return view('hrms::event_management.events.create');
+    }
+
     public function show($id)
     {
         // Retrieve the event by its ID
@@ -57,8 +62,16 @@ class HRMSEventController extends Controller
         $validatedData = $request->validate($eventRules);
 
         // Create a new HRMSEvent record
-        HRMSEvent::create($validatedData);
-        $this->addActivityLog($validatedData, Auth::user()->name . ' has created an Event ' . $validatedData['title']);
+        $event = HRMSEvent::create($validatedData);
+
+        $activityLog = sprintf(
+            '%s has created an Event named "%s" on %s',
+            Auth::user()->name,
+            $event->title,
+            now()->format('Y-m-d H:i:s')
+        );
+
+        $this->addActivityLog($event, $activityLog);
 
         return redirect()->route('hrms.event.index')->with('success', 'Event created successfully!');
     }

@@ -465,6 +465,18 @@
                                     x-transition:leave-start="transform opacity-100 scale-100"
                                     x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
                                     <li>
+                                        <a href="{{ route('hrms.event.create') }}"
+                                            class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
+                                            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7v4a2 2 0 002 2h4a2 2 0 002-2V7m0 10a2 2 0 01-2 2H8a2 2 0 01-2-2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v12m-4 2h.01">
+                                                </path>
+                                            </svg>
+                                            New Event
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href="{{ route('hrms.event.index') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
@@ -473,7 +485,7 @@
                                                     d="M8 7v4a2 2 0 002 2h4a2 2 0 002-2V7m0 10a2 2 0 01-2 2H8a2 2 0 01-2-2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v12m-4 2h.01">
                                                 </path>
                                             </svg>
-                                            Event Listing
+                                            Event List
                                         </a>
                                     </li>
 
