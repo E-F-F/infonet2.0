@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\HRMS\Http\Controllers\HRMSController;
-use Modules\HRMS\Http\Controllers\HRMSStaffController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSStaffController;
 // use Modules\HRMS\Http\Controllers\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
@@ -12,6 +12,7 @@ use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveTypeController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Payroll\HRMSPayGroupController;
 use Modules\HRMS\Http\Controllers\Payroll\HRMSAppraisalTypeController;
+use Modules\HRMS\Http\Controllers\Training\HRMSTrainingController;
 
 Route::middleware(['check.system.access:hrms'])->group(function () {
     Route::group(['prefix' => 'hrms', 'as' => 'hrms.'], function () {
@@ -19,6 +20,7 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
 
         Route::controller(HRMSStaffController::class)->group(function () {
             Route::get('staff', 'index')->name('staff.index');
+            Route::get('staff/{id}', 'show')->name('staff.show');
             Route::get('staff/create', 'create')->name('staff.create');
             Route::post('staff', 'store')->name('staff.store');
         });
@@ -28,9 +30,11 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
             ->name('event.')
             ->group(function () {
                 Route::get('/',  'index')->name('index');
-                // Route::post('/', 'store')->name('store');
-                // Route::put('/{id}', 'update')->name('update');
-                // Route::delete('/{id}', 'destroy')->name('destroy');
+                Route::post('/', 'store')->name('store');
+                // Route::get('/create', 'create')->name('create');
+                Route::get('/{id}',  'show')->name('show');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
             });
         Route::controller(HRMSEventTypeController::class)
             ->prefix('event-types')
@@ -42,6 +46,15 @@ Route::middleware(['check.system.access:hrms'])->group(function () {
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
         // Training
+        Route::controller(HRMSTrainingController::class)
+            ->prefix('trainings')
+            ->name('trainings.')
+            ->group(function () {
+                Route::get('/',  'index')->name('index');
+                Route::post('/', 'store')->name('store');
+                Route::put('/{id}', 'update')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
         Route::controller(HRMSTrainingTypeController::class)
             ->prefix('training-types')
             ->name('training-types.')

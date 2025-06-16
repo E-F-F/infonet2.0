@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('religion')->nullable();
             $table->string('race')->nullable();
             $table->string('blood_group')->nullable();
+            $table->string('work_email')->nullable();
+            $table->string('phone_number')->nullable();
             $table->text('home_address')->nullable();
             $table->string('image_url')->nullable();
             $table->timestamps();

@@ -28,8 +28,19 @@ class HRMSEvent extends Model
         'is_active',
     ];
 
-    // protected static function newFactory(): HRMSEventFactory
-    // {
-    //     // return HRMSEventFactory::new();
-    // }
+    public function eventType()
+    {
+        return $this->belongsTo(HRMSEventType::class, 'hrms_event_type_id');
+    }
+
+    public function getDecodedActivityLogs()
+    {
+        if (is_string($this->activity_logs)) {
+            $decodedLogs = json_decode($this->activity_logs, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decodedLogs;
+            }
+        }
+        return [];
+    }
 }

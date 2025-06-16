@@ -21,54 +21,54 @@
                 <table class="min-w-full text-sm text-left">
                     <thead class="bg-gray-100 text-gray-700 text-xs uppercase tracking-wider">
                         <tr>
-                            <th class="px-4 py-3">Title</th>
-                            <th class="px-4 py-3">Event Type</th>
+                            <th class="px-4 py-3">Name</th>
+                            <th class="px-4 py-3">Type</th>
                             <th class="px-4 py-3">Start Date</th>
                             <th class="px-4 py-3">End Date</th>
-                            <th class="px-4 py-3">Company</th>
                             <th class="px-4 py-3">Branch</th>
-                            <th class="px-4 py-3">Venue</th>
-                            <th class="px-4 py-3">Remarks</th>
+                            <th class="px-4 py-3">Award</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="divide-x divide-gray-200">
                             <td class="px-4 py-3">
-                                <input type="text" name="title"
+                                <input type="text" name="training_name"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
                             </td>
                             <td class="px-4 py-3">
-                                <select name="hrms_event_type_id"
+                                <select name="hrms_training_type_id"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
-                                    <option value="" disabled selected>Select Event Type</option>
-                                    @foreach ($eventTypes as $type)
+                                    <option value="" disabled selected>Select Type</option>
+                                    @foreach ($trainingTypes as $type)
                                         <option value="{{ $type->id }}">{{ $type->name }}</option>
                                     @endforeach
                                 </select>
                             </td>
                             <td class="px-4 py-3">
-                                <input type="date" name="start_date"
+                                <input type="date" name="training_start_date"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
                             </td>
                             <td class="px-4 py-3">
-                                <input type="date" name="end_date"
+                                <input type="date" name="training_end_date"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
                             </td>
                             <td class="px-4 py-3">
-                                <input type="text" name="event_company"
+                                <select name="branch_id"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
+                                    <option value="" disabled selected>Select Branch</option>
+                                    @foreach ($branch as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    @endforeach
+                                </select>
                             </td>
                             <td class="px-4 py-3">
-                                <input type="text" name="event_branch"
+                                <select name="hrms_training_award_type_id"
                                     class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <input type="text" name="event_venue"
-                                    class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500">
-                            </td>
-                            <td class="px-4 py-3">
-                                <textarea name="remarks" rows="2"
-                                    class="w-full border border-gray-300 rounded-md px-2 py-1 text-xs focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+                                    <option value="" disabled selected>Select Award</option>
+                                    @foreach ($trainingAwardsTypes as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    @endforeach
+                                </select>
                             </td>
                         </tr>
                     </tbody>
@@ -78,18 +78,14 @@
 
                     <button type="button" id="createButton"
                         class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 font-medium rounded-md text-xs px-4 py-2 transition-colors duration-200">
-                        Create Event
+                        Create Training
                     </button>
-                    {{-- <a href="{{ route('hrms.event.index') }}"
-                        class="text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 font-medium rounded-md text-xs px-4 py-2 border border-gray-300">
-                        Event Listing
-                    </a> --}}
                 </div>
             </form>
         </div>
     </div>
     {{-- Confirmation Modal --}}
-    <div id="confirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-transparent hidden">
+    {{-- <div id="confirmationModal" class="fixed inset-0 z-50 flex items-center justify-center bg-transparent hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-auto animate-fade-in-up">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">Confirm Creation</h3>
             <p class="text-sm text-gray-600 mb-6">Are you sure you want to create this event?</p>
@@ -104,9 +100,9 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    {{-- Event Listing --}}
+    {{-- Training Listing --}}
     <div class="container mx-auto px-4 py-6">
         <div class="flex justify-end mb-6">
             <form method="GET" class="flex gap-2">
@@ -123,66 +119,43 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100 text-gray-700 text-xs uppercase tracking-wider">
                     <tr>
-                        <th class="px-4 py-3 text-left">Title</th>
-                        <th class="px-4 py-3 text-left">Event Type</th>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Type</th>
                         <th class="px-4 py-3 text-left">Start Date</th>
                         <th class="px-4 py-3 text-left">End Date</th>
-                        <th class="px-4 py-3 text-left">Company</th>
                         <th class="px-4 py-3 text-left">Branch</th>
-                        <th class="px-4 py-3 text-left">Venue</th>
-                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Award</th>
                         <th class="px-4 py-3 text-left">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse ($events as $event)
+                    @forelse ($trainings as $training)
                         {{-- Wrap both TRs in a Tbody with x-data --}}
                 <tbody x-data="{ expanded: false }" class="divide-y divide-gray-100">
                     <tr @click="expanded = !expanded" class="hover:bg-gray-50 cursor-pointer">
                         <td class="px-4 py-3">
-                            <a href="{{ route('hrms.event.show', $event->id) }}"
+                            {{-- <a href="{{ route('hrms.event.show', $event->id) }}"
                                 class="text-blue-600 hover:underline">
                                 {{ $event->title }}
+                            </a> --}}
+                            <a href="" class="text-blue-600 hover:underline">
+                                {{ $training->training_name }}
                             </a>
                         </td>
-                        <td class="px-4 py-3">{{ $event->eventType->name ?? '' }}</td>
-                        <td class="px-4 py-3">{{ $event->start_date }}</td>
-                        <td class="px-4 py-3">{{ $event->end_date }}</td>
-                        <td class="px-4 py-3">{{ $event->event_company }}</td>
-                        <td class="px-4 py-3">{{ $event->event_branch }}</td>
-                        <td class="px-4 py-3">{{ $event->event_venue }}</td>
+                        <td class="px-4 py-3">{{ $training->trainingType->name ?? '' }}</td>
+                        <td class="px-4 py-3">{{ $training->training_start_date }}</td>
+                        <td class="px-4 py-3">{{ $training->training_end_date }}</td>
+                        <td class="px-4 py-3">{{ $training->branch->name }}</td>
+                        <td class="px-4 py-3">{{ $training->trainingAwardType->name }}</td>
                         <td class="px-4 py-3">
-                            @if ($event->is_active)
-                                <span
-                                    class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded">Active</span>
-                            @else
-                                <span
-                                    class="inline-block px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded">Inactive</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3">
-                            <a href="{{ route('hrms.event.show', $event->id) }}"
-                                class="text-blue-600 hover:underline text-xs">Show/Edit</a>
-                        </td>
-                    </tr>
-                    <tr x-show="expanded" x-transition.opacity> {{-- Added .opacity for smoother transition --}}
-                        <td colspan="8" class="px-4 py-3 bg-gray-50">
-                            <div class="flex items-start justify-between text-sm text-gray-700">
-                                <div>
-                                    <strong>Remarks:</strong> {{ $event->remarks ?? 'No remarks available.' }}
-                                </div>
-                                {{-- <a href=""
-                                    class="ml-4 text-xs px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200">
-                                    Edit
-                                </a> --}}
-                            </div>
+                            <a href="" class="text-blue-600 hover:underline text-xs">Show/Edit</a>
                         </td>
                     </tr>
                 </tbody>
             @empty
                 <tbody> {{-- Added a tbody for the empty state --}}
                     <tr>
-                        <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">No events found.</td>
+                        <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">No training found.</td>
                     </tr>
                 </tbody>
                 @endforelse
@@ -191,7 +164,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $events->withQueryString()->links() }}
+            {{ $trainings->withQueryString()->links() }}
         </div>
     </div>
 </x-hrms::layouts.master>

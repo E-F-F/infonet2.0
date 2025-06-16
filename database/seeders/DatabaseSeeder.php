@@ -41,5 +41,7 @@ class DatabaseSeeder extends Seeder
             'staff_auth_id' => 1,
             'system_access_id' => 1,
         ]);
+
+        $this->call(\Modules\HRMS\Database\Seeders\HRMSDatabaseSeeder::class);
     }
 }
