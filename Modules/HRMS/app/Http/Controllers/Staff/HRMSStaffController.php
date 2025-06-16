@@ -12,6 +12,7 @@ use Modules\HRMS\Models\HRMSStaffEmployment;
 use Modules\HRMS\Models\HRMSStaff;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class HRMSStaffController extends Controller
 {
@@ -22,21 +23,66 @@ class HRMSStaffController extends Controller
             'personal' => function ($query) {
                 // Select specific columns from the 'personal' relationship
                 // ALWAYS include the foreign key ('staff_id' or whatever links personal to staff)
-                $query->select('id', 'fullName', 'gender', 'image_url');
+                $query->select(
+                    'id',
+                    'fullName',
+                    'dob',
+                );
             },
-            'auth' => function ($query) {
-                // Select specific columns from the 'personal' relationship
-                // ALWAYS include the foreign key ('staff_id' or whatever links personal to staff)
-                $query->select('id', 'fullName', 'gender', 'image_url');
+            'employment' => function ($query) {
+                // Select specific columns from the 'employment' relationship
+                // ALWAYS include the foreign key ('staff_id' or whatever links employment to staff)
+                $query->select('id', 'branch_id', 'hrms_designation_id', 'hrms_leave_rank_id', 'hrms_pay_group_id', 'hrms_appraisal_type_id', 'employee_number', 'joining_date', 'created_at');
             },
-            
-            // 'employment' => function ($query) {
-            //     // Select specific columns from the 'employment' relationship
-            //     // ALWAYS include the foreign key ('staff_id' or whatever links employment to staff)
-            //     $query->select('id', 'branch_id', 'hrms_designation_id', 'hrms_leave_rank_id', 'hrms_pay_group_id', );
-            // },
-        ])->orderBy('id')->paginate(10);
-        return view('hrms::staff_management.staffs.index', compact('staff'));
+        ])->orderBy('id')->get();
+
+        $rows = $staff->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'fullName' => $s->personal->fullName ?? '-',
+                // 'ic_no' => $s->personal->ic_no ?? '-',
+                'dob' => $s->personal->dob ?? '-',
+                'designation' => $s->employment->designation->name ?? '-',
+                'leaveRank' => $s->employment->leaveRank->name ?? '-',
+                'payGroup' => $s->employment->payGroup->name ?? '-',
+                'appraisalType' => $s->employment->appraisalType->name ?? '-',
+                'employeeNumber' => $s->employment->employee_number ?? '-',
+                'joiningDate' => $s->employment->joining_date
+                    ? Carbon::parse($s->employment->joining_date)->format('Y-m-d')
+                    : '-',
+                'created_at' => $s->employment->created_at
+                    ? Carbon::parse($s->employment->created_at)->format('Y-m-d H:i:s')
+                    : '-',
+                
+            ];
+        })->toArray();
+
+        $headers = [
+            'fullName' => 'Full Name',
+            'employeeNumber' => 'Emp. No',
+            'dob' => 'Birth Date',
+            'designation' => 'Designation',
+            'leaveRank' => 'Leave Rank',
+            'payGroup' => 'Pay Group',
+            'appraisalType' => 'Appraisal Type',
+            'joiningDate' => 'Joining Date',
+            'relievingDate' => 'Relieving Date',
+            'created_at' => 'Created At',
+        ];
+
+        // $filters = [
+        //     [
+        //         'label' => 'Gender',
+        //         'name' => 'gender',
+        //         'options' => ['All', 'Male', 'Female'],
+        //     ],
+        //     [
+        //         'label' => 'Marital Status',
+        //         'name' => 'marital_status',
+        //         'options' => ['All', 'Single', 'Married', 'Divorced'],
+        //     ],
+        // ];
+        return view('hrms::staff_management.staffs.index', compact('headers', 'rows'));
     }
 
     public function show($id)
@@ -67,7 +113,8 @@ class HRMSStaffController extends Controller
         if (!$staff) {
             abort(404, 'Staff member not found.');
         }
-        return view('hrms::index', compact('staff'));
+        // return view('hrms::index', compact('staff'));
+        return view('hrms::staff_management.staffs.profile', compact('staff'));
     }
 
     public function create()
