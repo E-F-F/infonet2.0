@@ -46,11 +46,11 @@
             </div>
 
             <div x-show="activeTab === 'leave-adjustments'" class="tab-pane">
-                <div class="p-4 border rounded bg-white">Leave Adjustments tab content</div>
+                @include('hrms::staff_management.staffs.profileTab.leaveAdjustments')
             </div>
 
             <div x-show="activeTab === 'attendance'" class="tab-pane">
-                <div class="p-4 border rounded bg-white">Attendance History tab content</div>
+                @include('hrms::staff_management.staffs.profileTab.attendance')
             </div>
 
             <div x-show="activeTab === 'qualifications'" class="tab-pane">
