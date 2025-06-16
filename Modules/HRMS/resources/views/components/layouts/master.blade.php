@@ -401,7 +401,7 @@
                                     x-transition:leave-start="transform opacity-100 scale-100"
                                     x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
                                     <li>
-                                        <a href="{{ route('hrms.training-award-types.index') }}"
+                                        <a href="{{ route('hrms.trainings.index') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -464,7 +464,7 @@
                                     x-transition:leave="transition ease-in duration-75"
                                     x-transition:leave-start="transform opacity-100 scale-100"
                                     x-transition:leave-end="transform opacity-0 scale-95" class="ml-5 mt-1 space-y-1">
-                                    <li>
+                                    {{-- <li>
                                         <a href="{{ route('hrms.event.create') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">
                                             <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor"
@@ -475,7 +475,7 @@
                                             </svg>
                                             New Event
                                         </a>
-                                    </li>
+                                    </li> --}}
                                     <li>
                                         <a href="{{ route('hrms.event.index') }}"
                                             class="flex items-center p-2 text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-md transition duration-200 ease-in-out text-sm">

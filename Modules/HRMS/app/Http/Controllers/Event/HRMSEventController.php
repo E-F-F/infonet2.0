@@ -5,6 +5,7 @@ namespace Modules\HRMS\Http\Controllers\Event;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\HRMS\Models\HRMSEvent;
+use Modules\HRMS\Models\HRMSEventType;
 use Illuminate\Validation\ValidationException;
 use App\Traits\LogsActivity;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +21,13 @@ class HRMSEventController extends Controller
         $events = HRMSEvent::when($query, function ($q) use ($query) {
             $q->where('title', 'like', '%' . $query . '%');
         })
+            ->with('eventType')
             ->latest()
             ->paginate(10);
 
-        return view('hrms::event_management.events.index', compact('events', 'query'));
+        $eventTypes = HRMSEventType::where('is_active', true)->whereNull('deleted_at')->get();
+
+        return view('hrms::event_management.events.index', compact('events', 'query', 'eventTypes'));
     }
 
     public function create()

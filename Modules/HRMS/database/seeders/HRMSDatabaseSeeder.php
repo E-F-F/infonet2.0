@@ -12,6 +12,7 @@ use Modules\HRMS\Models\HRMSPayGroup;
 use Modules\HRMS\Models\HRMSStaff;
 use Modules\HRMS\Models\HRMSStaffEmployment;
 use Modules\HRMS\Models\HRMSStaffPersonal;
+use Modules\HRMS\Models\HRMSTraining;
 use Modules\HRMS\Models\HRMSTrainingAwardType;
 use Modules\HRMS\Models\HRMSTrainingType;
 
@@ -260,6 +261,15 @@ class HRMSDatabaseSeeder extends Seeder
             'remarks' => 'event something',
             // 'activity_logs' => 'write something',
             'is_active' => true,
+        ]);
+
+        HRMSTraining::create([
+            'branch_id' => 1,
+            'training_start_date' => now(),
+            'training_end_date' => now(),
+            'hrms_training_type_id' => 1,
+            'training_name' => 'TRAINING1',
+            'hrms_training_award_type_id' => 1,
         ]);
     }
 }
