@@ -4,8 +4,8 @@
         <div
             class="p-4 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 bg-gray-50 border-b border-gray-200">
             <!-- Search Input -->
-            <div class="relative w-full sm:w-1/2">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <div class="w-full sm:w-1/2">
+                <div class="inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -14,7 +14,7 @@
                 </div>
                 <input type="text" id="table-search"
                     class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Search users by name or title">
+                    placeholder="Search users by name or title or role">
             </div>
 
             <!-- Filter Dropdown -->
@@ -81,99 +81,102 @@
 
         <!-- Responsive wrapper for the table -->
         <!-- overflow-x-auto ensures horizontal scrolling on small screens if content is too wide -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full leading-normal table-auto text-sm text-left text-gray-500 dark:text-gray-400">
-                <!-- Table Header -->
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <!-- Table header cells with styling for text, alignment, and background -->
-                        <th scope="col" class="px-6 py-3">
-                            Name
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Title
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Status
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Role
-                        </th>
-                    </tr>
-                </thead>
-                <!-- Table Body -->
-                <tbody id="data-table-body">
-                    <!-- Sample Data Row 1 -->
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            John Doe
-                        </td>
-                        <td class="px-6 py-4">
-                            Software Engineer
-                        </td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Active</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            Member
-                        </td>
-                    </tr>
-                    <!-- Sample Data Row 2 -->
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Jane Smith
-                        </td>
-                        <td class="px-6 py-4">
-                            Product Manager
-                        </td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            Admin
-                        </td>
-                    </tr>
-                    <!-- Sample Data Row 3 -->
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Bob Johnson
-                        </td>
-                        <td class="px-6 py-4">
-                            UX Designer
-                        </td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Inactive</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            Editor
-                        </td>
-                    </tr>
-                    <!-- Sample Data Row 4 -->
-                    <tr
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            Alice Brown
-                        </td>
-                        <td class="px-6 py-4">
-                            Frontend Developer
-                        </td>
-                        <td class="px-6 py-4">
-                            <span
-                                class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Active</span>
-                        </td>
-                        <td class="px-6 py-4">
-                            Contributor
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="p-4">
+            <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+                <table class="min-w-full leading-normal table-xs text-left text-gray-500 dark:text-gray-400">
+                    <!-- Table Header -->
+                    <thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <!-- Table header cells with styling for text, alignment, and background -->
+                            <th scope="col" class="px-6 py-3">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Title
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Status
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Role
+                            </th>
+                        </tr>
+                    </thead>
+                    <!-- Table Body -->
+                    <tbody id="data-table-body">
+                        <!-- Sample Data Row 1 -->
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                John Doe
+                            </td>
+                            <td class="px-6 py-4">
+                                Software Engineer
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Active</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                Member
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 2 -->
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Jane Smith
+                            </td>
+                            <td class="px-6 py-4">
+                                Product Manager
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                Admin
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 3 -->
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Bob Johnson
+                            </td>
+                            <td class="px-6 py-4">
+                                UX Designer
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Inactive</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                Editor
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 4 -->
+                        <tr
+                            class="bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Alice Brown
+                            </td>
+                            <td class="px-6 py-4">
+                                Frontend Developer
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Active</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                Contributor
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+        
     </div>
 
     <!-- Flowbite JavaScript CDN -->
@@ -192,12 +195,13 @@
                 rows.forEach(row => {
                     const name = row.children[0].textContent.toLowerCase();
                     const title = row.children[1].textContent.toLowerCase();
+                    const role = row.children[3].textContent.toLowerCase();
                     // Get the text content of the status directly from the third cell (td)
                     // This is more robust as it doesn't rely on specific nested span classes.
                     const status = row.children[2].textContent.toLowerCase();
 
                     // Check for search term
-                    const matchesSearch = name.includes(searchTerm) || title.includes(searchTerm);
+                    const matchesSearch = name.includes(searchTerm) || title.includes(searchTerm) || role.includes(searchTerm);
 
                     // Check for status filter
                     const matchesFilter = (selectedStatusFilter === 'All') || (status.includes(

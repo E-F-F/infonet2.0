@@ -1,7 +1,7 @@
 <x-hrms::layouts.master>
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-xl shadow-xl w-full border border-gray-200">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Add New Staff Member</h1>
+            <h4 class="text-lg font-bold text-gray-800 mb-2 text-center">Add New Staff Member</h4>
 
             <!-- Session Messages -->
             @if (session('success'))
@@ -39,7 +39,7 @@
 
                 <!-- Authentication Details Section -->
                 <div class="border border-gray-300 p-6 rounded-lg bg-gray-50">
-                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Authentication Details</h2>
+                    <h4 class="text-base font-semibold text-gray-700 mb-4">Authentication Details</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username <span
@@ -83,7 +83,7 @@
                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 placeholder="E.g., Doe" required>
                         </div>
-                        <div class="md:col-span-3">
+                        <div>
                             <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span
                                     class="text-red-500">*</span></label>
                             <input type="text" name="fullName" id="fullName" value="{{ old('fullName') }}"
@@ -160,6 +160,26 @@
                                 value="{{ old('blood_group') }}"
                                 class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 placeholder="E.g., A+, O-">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="email" id="email" value="{{ old('email') }}"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="E.g., email@domain.com" required>
+                        </div>
+                        <div>
+                            <label for="mobilePhone" class="block text-sm font-medium text-gray-700 mb-1">Mobile Phone Number <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="mobilePhone" id="mobilePhone" value="{{ old('mobilePhone') }}"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="E.g., 0123456789" required>
+                        </div>
+                        <div>
+                            <label for="homePhone" class="block text-sm font-medium text-gray-700 mb-1">Home Phone Number </label>
+                            <input type="text" name="homePhone" id="homePhone" value="{{ old('homePhone') }}"
+                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                placeholder="E.g., 098765432">
                         </div>
                         <div class="md:col-span-3">
                             <label for="home_address" class="block text-sm font-medium text-gray-700 mb-1">Home
