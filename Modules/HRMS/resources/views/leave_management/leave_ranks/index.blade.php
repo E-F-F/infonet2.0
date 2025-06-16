@@ -9,11 +9,13 @@
             </button>
         </div>
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div class="overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left text-gray-700" id="leaveRanksTable">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                     <tr>
                         <th scope="col" class="px-6 py-3">Name</th>
+                        <th scope="col" class="px-6 py-3">Created On</th>
+                        <th scope="col" class="px-6 py-3">Last Updated On</th>
                         <th scope="col" class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -21,6 +23,8 @@
                     @foreach ($leaveRanks as $type)
                         <tr class="bg-white border-b hover:bg-gray-50" data-id="{{ $type->id }}">
                             <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->name }}</td>
+                            <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->created_at }}</td>
+                            <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->updated_at }}</td>
                             <td class="px-6 py-4 flex gap-2 action-buttons">
                                 <button
                                     class="edit-btn text-white bg-yellow-400 hover:bg-yellow-500 font-medium rounded-lg text-sm px-3 py-1.5">
@@ -104,7 +108,7 @@
 
                     let url, method;
                     if (isNew) {
-                        url = '{{ route('hrms.leave-ranks.store') }}';
+                        url = `{{ route('hrms.leave-ranks.store') }}`;
                         method = 'POST';
                     } else {
                         url = `{{ url('hrms/leave-ranks') }}/${rowId}`;
@@ -198,6 +202,8 @@
                 <button class="cancel-btn text-gray-800 bg-gray-200 hover:bg-gray-300 font-medium rounded-lg text-sm px-3 py-1.5">Cancel</button>
                 <button class="delete-btn bg-red-600 text-white rounded px-3 py-1.5 hover:bg-red-700 hidden">Delete</button>
             </td>
+            <td></td>
+            <td></td>
         `;
                 newRow.scrollIntoView({
                     behavior: 'smooth',

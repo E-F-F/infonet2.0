@@ -9,11 +9,13 @@
             </button>
         </div>
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div class="overflow-x-auto shadow-md sm:rounded-lg">
             <table class="w-full text-sm text-left text-gray-700" id="payGroupsTable">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                     <tr>
                         <th scope="col" class="px-6 py-3">Name</th>
+                        <th scope="col" class="px-6 py-3">Create On</th>
+                        <th scope="col" class="px-6 py-3">Last Updated On</th>
                         <th scope="col" class="px-6 py-3">Actions</th>
                     </tr>
                 </thead>
@@ -21,6 +23,8 @@
                     @foreach ($payGroups as $type)
                         <tr class="bg-white border-b hover:bg-gray-50" data-id="{{ $type->id }}">
                             <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->name }}</td>
+                            <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->created_at }}</td>
+                            <td class="px-6 py-4 editable-cell" data-field="name">{{ $type->updated_at }}</td>
                             <td class="px-6 py-4 flex gap-2 action-buttons">
                                 <button
                                     class="edit-btn text-white bg-yellow-400 hover:bg-yellow-500 font-medium rounded-lg text-sm px-3 py-1.5">
@@ -104,7 +108,7 @@
 
                     let url, method;
                     if (isNew) {
-                        url = '{{ route('hrms.pay-groups.store') }}';
+                        url = `{{ route('hrms.pay-groups.store') }}`;
                         method = 'POST';
                     } else {
                         url = `{{ url('hrms/pay-groups') }}/${rowId}`;
