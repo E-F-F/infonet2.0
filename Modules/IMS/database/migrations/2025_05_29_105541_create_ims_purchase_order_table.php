@@ -36,11 +36,11 @@ return new class extends Migration
 
             $table->enum('status', ['draft', 'submitted', 'received', 'cancelled'])->default('draft');
 
-            // User tracking
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('received_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
+            // Staff tracking
+            $table->foreignId('created_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
+            $table->foreignId('received_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
+            $table->foreignId('approved_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
 
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
@@ -79,7 +79,7 @@ return new class extends Migration
             $table->string('grn_number')->unique(); // e.g. GRN-2025-001
             $table->date('grn_date')->default(now());
 
-            $table->foreignId('received_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('received_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
             $table->timestamps();
         });
 

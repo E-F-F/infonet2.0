@@ -63,14 +63,15 @@ return new class extends Migration
             $table->string('name');
             $table->string('running_number')->unique();
             $table->text('description')->nullable();
-            $table->foreignId('ims_stock_category_id')->constrained('ims_stock_category')->cascadeOnDelete();
+            $table->foreignId('ims_stock_category_id')->nullable()->constrained('ims_stock_category')->cascadeOnDelete();
             $table->foreignId('ims_stock_type_id')->nullable()->constrained('ims_stock_type')->cascadeOnDelete();
+            $table->enum('stock_department', ['marketing', 'sparepart', 'vehicle'])->default('marketing');
             // $table->string('stock')->nullable();
             $table->unsignedInteger('stock_stable_unit')->default(0);
-            $table->string('unit_measure');
+            $table->string('unit_measure')->nullable();
             $table->string('image')->nullable();
             $table->text('remark')->nullable();
-            $table->json('activity_logs')->nullable();
+            $table->json('activity_logs')->nullable(); // e.g., [{"action":"created","hrms_staff_id":1,"timestamp":"..."}]
             $table->timestamps();
             $table->softDeletes();
         });
@@ -79,9 +80,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ims_stock_id')->constrained('ims_stock')->cascadeOnDelete();
 
+            $table->string('sku_code')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->string('make')->nullable();
+            $table->string('brand')->nullable();
             $table->unsignedInteger('weight')->nullable();
 
             $table->decimal('default_purchase_cost', 12, 4)->nullable();
@@ -89,7 +92,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['ims_stock_id', 'size', 'color', 'make', 'weight']);
+            $table->unique(['ims_stock_id', 'size', 'color', 'make', 'weight'], 'stock_variant_unique');
         });
 
         Schema::create('ims_stock_batch', function (Blueprint $table) {
@@ -115,7 +118,7 @@ return new class extends Migration
 
             $table->string('rack_no')->nullable();
             $table->string('shelf_no')->nullable();
-            $table->string('bin_no')->nullable();
+            $table->string('bin_no');
             $table->foreignId('location_id')->nullable()->constrained('locations')->nullOnDelete();
 
             $table->unsignedInteger('quantity')->default(0);
@@ -141,7 +144,7 @@ return new class extends Migration
             $table->decimal('purchase_cost', 12, 2)->nullable();
             $table->decimal('sales_price', 12, 2)->nullable();
 
-            $table->foreignId('branch_id')->constrained('branch');
+            $table->foreignId('branch_id')->constrained('branch')->cascadeOnDelete();
             $table->string('location_code')->nullable(); // e.g., warehouse bay
 
             $table->enum('status', ['in_stock', 'sold', 'reserved', 'in_transit'])->default('in_stock');
