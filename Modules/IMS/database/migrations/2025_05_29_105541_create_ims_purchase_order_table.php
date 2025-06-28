@@ -24,7 +24,7 @@ return new class extends Migration
          */
         Schema::create('ims_purchase_orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('supplier_id')->constrained('ims_suppliers')->cascadeOnDelete();
+            $table->foreignId('supplier_id')->constrained('ims_supplier')->cascadeOnDelete();
             $table->foreignId('tax_id')->constrained('ims_tax')->cascadeOnDelete();
             $table->date('expected_receipt_date');
             $table->text('billing_address');

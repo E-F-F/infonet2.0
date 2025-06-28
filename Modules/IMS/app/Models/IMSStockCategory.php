@@ -18,4 +18,9 @@ class IMSStockCategory extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function stocks()
+    {
+        return $this->hasMany(IMSStock::class, 'ims_stock_category_id');
+    }
 }

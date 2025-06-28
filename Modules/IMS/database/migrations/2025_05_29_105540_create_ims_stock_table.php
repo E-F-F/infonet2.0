@@ -107,7 +107,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['ims_stock_variant_id', 'batch_no', 'ims_supplier_id']);
+            $table->unique(['ims_stock_variant_id', 'batch_no', 'ims_supplier_id'], 'unique_batch_combo');
         });
 
         Schema::create('ims_stock_quantity', function (Blueprint $table) {
@@ -119,7 +119,7 @@ return new class extends Migration
             $table->string('rack_no')->nullable();
             $table->string('shelf_no')->nullable();
             $table->string('bin_no');
-            $table->foreignId('location_id')->nullable()->constrained('locations')->nullOnDelete();
+            $table->foreignId('location_id')->nullable()->constrained('branch')->nullOnDelete();
 
             $table->unsignedInteger('quantity')->default(0);
 

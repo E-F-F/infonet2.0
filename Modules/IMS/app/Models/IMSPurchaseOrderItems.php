@@ -22,4 +22,14 @@ class IMSPurchaseOrderItems extends Model
         'quantity_received',
         'unit_cost',
     ];
+
+    public function variant()
+    {
+        return $this->belongsTo(IMSStockVariant::class, 'ims_stock_variant_id');
+    }
+
+    public function grnItems()
+    {
+        return $this->hasMany(IMSGrnItems::class, 'purchase_order_item_id');
+    }
 }

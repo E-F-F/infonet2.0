@@ -21,4 +21,14 @@ class IMSGrns extends Model
         'grn_date',
         'received_by',
     ];
+
+    public function items()
+    {
+        return $this->hasMany(IMSGrnItems::class, 'grn_id');
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(IMSPurchaseOrders::class, 'purchase_order_id');
+    }
 }

@@ -23,4 +23,27 @@ class IMSStockBatch extends Model
         'purchase_cost',
         'sales_price',
     ];
+
+    protected $casts = [
+        'expiry_date' => 'date',
+        'purchase_cost' => 'decimal:4',
+        'sales_price' => 'decimal:4',
+    ];
+
+    // Relationships
+
+    public function variant()
+    {
+        return $this->belongsTo(IMSStockVariant::class, 'ims_stock_variant_id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(IMSSupplier::class, 'ims_supplier_id');
+    }
+
+    public function quantities()
+    {
+        return $this->hasMany(IMSStockQuantity::class, 'ims_stock_batch_id');
+    }
 }

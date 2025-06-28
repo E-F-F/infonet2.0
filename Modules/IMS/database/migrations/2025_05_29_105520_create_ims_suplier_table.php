@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('supplier_office_number')->nullable();
             $table->string('supplier_email')->nullable();
             $table->string('supplier_address')->nullable();
+            $table->timestamps();
         });
     }
 

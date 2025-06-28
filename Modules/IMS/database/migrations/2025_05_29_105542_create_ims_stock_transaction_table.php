@@ -26,7 +26,7 @@ return new class extends Migration
         Schema::create('ims_stock_transactions', function (Blueprint $table) {
             $table->id();
             $table->string('running_number')->unique();
-            $table->foreignId('ims_supplier_id')->nullable()->constrained('ims_suppliers')->nullOnDelete();
+            $table->foreignId('ims_supplier_id')->nullable()->constrained('ims_supplier')->nullOnDelete();
 
             $table->enum('type', ['STOCK IN', 'STOCK OUT', 'STOCK TRANSFER']);
             $table->string('recipient_name')->nullable();
@@ -74,6 +74,25 @@ return new class extends Migration
             $table->unsignedInteger('quantity');
 
             $table->timestamps();
+        });
+
+        Schema::create('ims_vehicle_transaction_items', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('ims_stock_transaction_id')
+                ->constrained('ims_stock_transactions')->cascadeOnDelete();
+
+            $table->foreignId('ims_stock_vehicle_id')
+                ->constrained('ims_stock_vehicles')->cascadeOnDelete();
+
+            $table->enum('status', ['IN TRANSIT', 'RECEIVED', 'RETURNED', 'CANCELLED'])->default('IN TRANSIT');
+
+            $table->timestamps();
+
+            $table->unique(
+                ['ims_stock_transaction_id', 'ims_stock_vehicle_id'],
+                'vehicle_tx_item_unique'
+            );
         });
     }
 

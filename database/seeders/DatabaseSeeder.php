@@ -43,5 +43,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(\Modules\HRMS\Database\Seeders\HRMSDatabaseSeeder::class);
+        $this->call(\Modules\IMS\Database\Seeders\IMSDatabaseSeeder::class);
     }
 }

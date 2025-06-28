@@ -22,4 +22,19 @@ class IMSStockTransactionItems extends Model
         'status',
         'quantity',
     ];
+
+    public function transaction()
+    {
+        return $this->belongsTo(IMSStockTransactions::class, 'ims_stock_transaction_id');
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(IMSStockVariant::class, 'ims_stock_variant_id');
+    }
+
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(IMSPurchaseOrders::class, 'ims_purchase_order_id');
+    }
 }

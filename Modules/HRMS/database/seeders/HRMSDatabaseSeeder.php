@@ -12,6 +12,7 @@ use Modules\HRMS\Models\HRMSPayGroup;
 use Modules\HRMS\Models\HRMSStaff;
 use Modules\HRMS\Models\HRMSStaffEmployment;
 use Modules\HRMS\Models\HRMSStaffPersonal;
+use Modules\HRMS\Models\HRMSStaffDependentChild; // Add this line
 use Modules\HRMS\Models\HRMSTraining;
 use Modules\HRMS\Models\HRMSTrainingAwardType;
 use Modules\HRMS\Models\HRMSTrainingType;
@@ -147,23 +148,75 @@ class HRMSDatabaseSeeder extends Seeder
             'name' => 'Special Leave',
             'is_active' => true,
         ]);
-        HRMSStaffPersonal::create([
+
+        $staffPersonal = HRMSStaffPersonal::create([
             'firstName' => 'MOHAMAD IZWAN',
             'middleName' => null,
             'lastName' => 'BIN MANDA',
             'fullName' => 'MOHAMAD IZWAN BIN MANDA',
             'ic_no' => '012345-67-8901',
-            'dob' => now(),
+            'dob' => now()->subYears(30), // Example: 30 years ago
+            'gender' => 'Male', // Ensure gender is set for enum
             'marital_status' => 'SINGLE',
-            'nationality' => 'MALAYSIAN',
+            // 'nationality' is not in the migration, so removed from seeder
             'religion' => 'ISLAM',
             'race' => 'SABAHAN',
             'blood_group' => 'B-',
             'work_email' => 'mohdizwanmanda@gmail.com',
-            'phone_number' => '011-253-70146',
-            'home_address' => 'addresses',
+            'mobile_no' => '011-253-70146', // Renamed from phone_number
+            'present_address' => 'addresses', // Renamed from home_address
             'image_url' => 'imageses',
+            // Add other nullable fields with null or default values if not explicitly provided
+            'bank_account_no' => null,
+            'bank_name' => null,
+            'bank_branch' => null,
+            'socso_no' => null,
+            'epf_no' => null,
+            'income_tax_no' => null,
+            'old_ic_no' => null,
+            'passport_no' => null,
+            'driving_license_no' => null,
+            'driving_license_category' => null,
+            'driving_license_expiry_date' => null,
+            'gdl_expiry_date' => null,
+            'work_permit_expiry_date' => null,
+            'father_name' => null,
+            'father_dob' => null,
+            'mother_name' => null,
+            'mother_dob' => null,
+            'spouse_name' => null,
+            'spouse_dob' => null,
+            'work_no' => null,
+            'landline_no' => null,
+            'other_email' => null,
+            'present_city' => null,
+            'present_state' => null,
+            'permanent_address' => null,
+            'permanent_city' => null,
+            'permanent_state' => null,
+            'mailing_address' => null,
+            'emergency_contact' => null,
+            'emergency_relation' => null,
+            'emergency_landline_no' => null,
+            'emergency_work_no' => null,
+            'emergency_mobile_no' => null,
+            'emergency_address' => null,
         ]);
+
+        // Seed dependent child data
+        HRMSStaffDependentChild::create([
+            'hrms_staff_personal_id' => $staffPersonal->id,
+            'name' => 'Siti Aisyah Binti Izwan',
+            'dob' => now()->subYears(5), // Example child's DOB
+            'remark' => 'Daughter',
+        ]);
+        HRMSStaffDependentChild::create([
+            'hrms_staff_personal_id' => $staffPersonal->id,
+            'name' => 'Muhammad Adam Bin Izwan',
+            'dob' => now()->subYears(2), // Example child's DOB
+            'remark' => 'Son',
+        ]);
+
         HRMSStaffEmployment::create([
             'branch_id' => 1,
             // 'hrms_designation_id' => ,

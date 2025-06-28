@@ -20,4 +20,14 @@ class IMSGrnItems extends Model
         'purchase_order_item_id',
         'quantity_received',
     ];
+
+    public function grn()
+    {
+        return $this->belongsTo(IMSGrns::class, 'grn_id');
+    }
+
+    public function purchaseOrderItem()
+    {
+        return $this->belongsTo(IMSPurchaseOrderItems::class, 'purchase_order_item_id');
+    }
 }
