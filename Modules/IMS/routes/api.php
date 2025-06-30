@@ -9,7 +9,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 });
 
 Route::prefix('ims/marketing')->group(function () {
-    Route::get('stocks', [IMSStockMarketingController::class, 'index']);
-    Route::get('stocks/{id}', [IMSStockMarketingController::class, 'show']);
+    Route::get('stock', [IMSStockMarketingController::class, 'index']);
+    Route::post('stock', [IMSStockMarketingController::class, 'store']);
+    Route::get('stock/{id}', [IMSStockMarketingController::class, 'show']);
+
+    Route::get('stocks', [IMSStockMarketingController::class, 'showStock']);
     Route::get('stocks-variants/{id}', [IMSStockMarketingController::class, 'showStockAllVariant']); //
 });
