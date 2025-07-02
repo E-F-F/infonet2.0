@@ -20,6 +20,11 @@ return new class extends Migration
             $table->foreignId('hrms_appraisal_type_id')->nullable()->constrained('hrms_appraisal_type')->onDelete('cascade');
             $table->string('employee_number')->nullable();
             $table->date('joining_date')->nullable();
+            $table->date('confirmation_date')->nullable();
+            $table->date('relieving_date')->nullable();
+            $table->unsignedBigInteger('training_period')->default(0);
+            $table->unsignedBigInteger('probation_period')->default(0);
+            $table->unsignedBigInteger('notice_period')->default(0);
             $table->timestamps();
         });
     }
