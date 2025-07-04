@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('system_access', function (Blueprint $table) {
             $table->id();
+            $table->string('access_name');
             $table->foreignId('branch_id')->nullable()->constrained('branch')->onDelete('cascade');
             $table->boolean('hrms')->default(false);
             // $table->boolean('payroll')->default(false);

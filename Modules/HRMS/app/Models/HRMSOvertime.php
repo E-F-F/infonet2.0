@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * HRMSAttendance Model
+ * HRMSOvertime Model
  *
- * This model represents the 'hrms_attendance' table, storing staff attendance records.
- * It includes a relationship to HRMSStaff.
+ * This model represents the 'hrms_overtime' table, storing staff overtime records.
+ * It includes a relationship to HRMSStaff and handles activity logs.
  */
-class HRMSAttendance extends Model
+class HRMSOvertime extends Model
 {
     use HasFactory;
 
@@ -21,7 +21,7 @@ class HRMSAttendance extends Model
      *
      * @var string
      */
-    protected $table = 'hrms_attendance';
+    protected $table = 'hrms_overtime';
 
     /**
      * The attributes that are mass assignable.
@@ -30,15 +30,12 @@ class HRMSAttendance extends Model
      */
     protected $fillable = [
         'hrms_staff_id',
-        'attendance_date',
-        'morning_clockIn',
-        'morning_clockOut',
-        'morning_status',
-        'afternoon_clockIn',
-        'afternoon_clockOut',
-        'afternoon_status',
-        'total_working_hours',
-        'remark',
+        'overtime_date',
+        'overtime_clockIn',
+        'overtime_clockOut',
+        'overtime_total_hours',
+        'overtime_status',
+        'activity_logs',
     ];
 
     /**
@@ -47,16 +44,15 @@ class HRMSAttendance extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'attendance_date' => 'date',
-        'morning_clockIn' => 'datetime',
-        'morning_clockOut' => 'datetime',
-        'afternoon_clockIn' => 'datetime',
-        'afternoon_clockOut' => 'datetime',
-        'total_working_hours' => 'float',
+        'overtime_date' => 'date',
+        'overtime_clockIn' => 'datetime',
+        'overtime_clockOut' => 'datetime',
+        'overtime_total_hours' => 'float',
+        'activity_logs' => 'array', // Cast JSON column to array
     ];
 
     /**
-     * Get the staff member associated with this attendance record.
+     * Get the staff member associated with this overtime record.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

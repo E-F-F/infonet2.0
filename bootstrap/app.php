@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Register your middleware alias here
         $middleware->alias([
-            'check.system.access' => \App\Http\Middleware\CheckSystemAccess::class,
+            'module.access' => \App\Http\Middleware\CheckModuleAccess::class, // <-- Use the new middleware name and alias
             // Add any other aliases you need
         ]);
     })

@@ -4,17 +4,31 @@ namespace Modules\HRMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\HRMS\Database\Factories\HRMSEventFactory;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+/**
+ * HRMSEvent Model
+ *
+ * This model represents the 'hrms_event' table, storing event details.
+ * It includes relationships to Event Type and handles activity logs.
+ * It also supports soft deletes.
+ */
 class HRMSEvent extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
-     * The attributes that are mass assignable.
+     * The table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'hrms_event';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'hrms_event_type_id',
         'title',
@@ -28,19 +42,34 @@ class HRMSEvent extends Model
         'is_active',
     ];
 
-    public function eventType()
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'activity_logs' => 'array', // Cast JSON column to array
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array<int, string>
+     */
+    protected $dates = [
+        'deleted_at',
+    ];
+
+    /**
+     * Get the event type that the event belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function eventType(): BelongsTo
     {
         return $this->belongsTo(HRMSEventType::class, 'hrms_event_type_id');
-    }
-
-    public function getDecodedActivityLogs()
-    {
-        if (is_string($this->activity_logs)) {
-            $decodedLogs = json_decode($this->activity_logs, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return $decodedLogs;
-            }
-        }
-        return [];
     }
 }

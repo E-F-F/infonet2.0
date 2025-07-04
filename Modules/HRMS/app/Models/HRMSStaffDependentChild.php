@@ -4,7 +4,14 @@ namespace Modules\HRMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Import BelongsTo for the relationship
 
+/**
+ * HRMSStaffDependentChild Model
+ *
+ * This model represents the 'hrms_staff_dependent_child' table, storing details of staff's children.
+ * It has a belongsTo relationship with HRMSStaffPersonal.
+ */
 class HRMSStaffDependentChild extends Model
 {
     use HasFactory;
@@ -38,16 +45,12 @@ class HRMSStaffDependentChild extends Model
     ];
 
     /**
-     * Get the staff personal record that owns the dependent child.
+     * Get the personal staff record that owns the dependent child.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function staffPersonal()
+    public function personal(): BelongsTo
     {
         return $this->belongsTo(HRMSStaffPersonal::class, 'hrms_staff_personal_id');
     }
-
-    // If you plan to use a factory, uncomment the following and create the factory file.
-    // protected static function newFactory(): HRMSStaffDependentChildFactory
-    // {
-    //     return HRMSStaffDependentChildFactory::new();
-    // }
 }

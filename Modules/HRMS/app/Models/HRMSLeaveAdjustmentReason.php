@@ -4,16 +4,18 @@ namespace Modules\HRMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletes; // Import the SoftDeletes trait
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 /**
- * HRMSOffenceType Model
+ * HRMSLeaveRank Model
  *
- * This model represents the 'hrms_offence_type' table.
+ * This model represents the 'hrms_leave_rank' table.
  * It supports soft deletes.
  */
-class HRMSOffenceType extends Model
+class HRMSLeaveAdjustmentReason extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,7 +24,7 @@ class HRMSOffenceType extends Model
      *
      * @var string
      */
-    protected $table = 'hrms_offence_type';
+    protected $table = 'hrms_leave_adjustment_reason';
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +32,8 @@ class HRMSOffenceType extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'reason_name',
+        'built_in',
         'is_active',
     ];
 
@@ -53,12 +56,10 @@ class HRMSOffenceType extends Model
     ];
 
     /**
-     * Get the offence records associated with this offence type.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the leave adjustments associated with this reason.
      */
-    public function offences(): HasMany
+    public function adjustments(): HasMany
     {
-        return $this->hasMany(HRMSOffence::class, 'hrms_offence_type_id');
+        return $this->hasMany(HrmsLeaveAdjustment::class, 'adjustment_reason_id');
     }
 }
