@@ -133,8 +133,6 @@ class IMSStockMarketingController extends Controller
         return response()->json($data);
     }
 
-
-
     public function showStockAllVariant($stockId)
     {
         $branchId = 1;
@@ -200,60 +198,50 @@ class IMSStockMarketingController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'running_number' => 'required|string', // ✅ Add this line
+            'running_number' => 'required|string',
             'stock_category_id' => 'nullable|exists:ims_stock_category,id',
             'stock_type_id' => 'nullable|exists:ims_stock_type,id',
             'stock_department' => 'required|in:marketing,sparepart,vehicle',
             'unit_measure' => 'nullable|string',
 
-            'variant.size' => 'nullable|string',
-            'variant.color' => 'nullable|string',
-            'variant.make' => 'nullable|string',
-            'variant.brand' => 'nullable|string',
-            'variant.weight' => 'nullable|numeric',
-            'variant.default_purchase_cost' => 'nullable|numeric',
-            'variant.default_sales_price' => 'nullable|numeric',
+            'size' => 'nullable|string',
+            'color' => 'nullable|string',
+            'make' => 'nullable|string',
+            'brand' => 'nullable|string',
+            'weight' => 'nullable|numeric',
+            'default_purchase_cost' => 'nullable|numeric',
+            'default_sales_price' => 'nullable|numeric',
         ]);
 
-        $stock = IMSStock::where('running_number', $validated['running_number'])->first();
-
-        if (!$stock) {
-            $stock = IMSStock::create([
+        $stock = IMSStock::firstOrCreate(
+            ['running_number' => $validated['running_number']],
+            [
                 'name' => $validated['name'],
-                'running_number' => $validated['running_number'],
                 'ims_stock_category_id' => $validated['stock_category_id'] ?? null,
                 'ims_stock_type_id' => $validated['stock_type_id'] ?? null,
                 'stock_department' => $validated['stock_department'],
                 'unit_measure' => $validated['unit_measure'] ?? null,
-            ]);
-        }
+            ]
+        );
 
-        // 2. Prepare variant data
-        $variantData = $validated['variant'] ?? [];
-
-        // 3. Add ims_stock_id to variant for unique check
-        $variantWithStock = array_merge($variantData, ['ims_stock_id' => $stock->id]);
-
-        // 4. Check or create
         $variant = IMSStockVariant::firstOrCreate(
             [
                 'ims_stock_id' => $stock->id,
-                'size' => $variantData['size'] ?? null,
-                'color' => $variantData['color'] ?? null,
-                'make' => $variantData['make'] ?? null,
-                'weight' => $variantData['weight'] ?? null,
+                'size' => $validated['size'] ?? null,
+                'color' => $validated['color'] ?? null,
+                'make' => $validated['make'] ?? null,
+                'weight' => $validated['weight'] ?? null,
             ],
-            [ // only fills on create
-                'brand' => $variantData['brand'] ?? null,
-                'default_purchase_cost' => $variantData['default_purchase_cost'] ?? null,
-                'default_sales_price' => $variantData['default_sales_price'] ?? null,
+            [
+                'brand' => $validated['brand'] ?? null,
+                'default_purchase_cost' => $validated['default_purchase_cost'] ?? null,
+                'default_sales_price' => $validated['default_sales_price'] ?? null,
             ]
         );
 
         return response()->json([
             'message' => 'Stock created successfully.',
             'data' => [
-                // Stock info
                 'stock_id'           => $stock->id,
                 'stock_name'         => $stock->name,
                 'stock_running_no'   => $stock->running_number,
@@ -265,7 +253,6 @@ class IMSStockMarketingController extends Controller
                 'image'              => $stock->image,
                 'activity_logs'      => $stock->activity_logs,
 
-                // Variant info
                 'variant_id'         => $variant->id,
                 'variant_size'       => $variant->size,
                 'variant_color'      => $variant->color,
@@ -275,51 +262,60 @@ class IMSStockMarketingController extends Controller
         ]);
     }
 
-
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('ims::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $variantId)
     {
         $validated = $request->validate([
-            'size'               => 'nullable|string|max:100',
-            'color'              => 'nullable|string|max:100',
-            'make'               => 'nullable|string|max:100',
-            'brand'              => 'nullable|string|max:100',
+            'size'                 => 'nullable|string|max:100',
+            'color'                => 'nullable|string|max:100',
+            'make'                 => 'nullable|string|max:100',
+            'brand'                => 'nullable|string|max:100',
+            'weight'               => 'nullable|numeric',
             'default_purchase_cost' => 'nullable|numeric',
             'default_sales_price'   => 'nullable|numeric',
 
-            // Optional stock info updates (only if you're allowing them)
-            'stock_name'         => 'nullable|string|max:255',
-            'unit_measure'       => 'nullable|string|max:50',
+            'stock_name'           => 'nullable|string|max:255',
+            'unit_measure'         => 'nullable|string|max:50',
         ]);
 
         $variant = IMSStockVariant::with('stock')->findOrFail($variantId);
 
-        // Update variant fields
+        // Check if new combination would violate the unique constraint
+        $imsStockId = $variant->ims_stock_id;
+        $newSize    = $validated['size']    ?? $variant->size;
+        $newColor   = $validated['color']   ?? $variant->color;
+        $newMake    = $validated['make']    ?? $variant->make;
+        $newWeight  = $validated['weight']  ?? $variant->weight;
+
+        $conflict = IMSStockVariant::where('ims_stock_id', $imsStockId)
+            ->where('id', '!=', $variantId)
+            ->where('size', $newSize)
+            ->where('color', $newColor)
+            ->where('make', $newMake)
+            ->where('weight', $newWeight)
+            ->exists();
+
+        if ($conflict) {
+            return response()->json([
+                'message' => 'A variant with the same size, color, make, and weight already exists for this stock.',
+            ], 422);
+        }
+
+        // Proceed with update
         $variant->update([
-            'size'                 => $validated['size'],
-            'color'                => $validated['color'],
-            'make'                 => $validated['make'],
-            'brand'                => $validated['brand'],
-            'default_purchase_cost' => $validated['default_purchase_cost'],
-            'default_sales_price'   => $validated['default_sales_price'],
+            'size'                 => $validated['size'] ?? $variant->size,
+            'color'                => $validated['color'] ?? $variant->color,
+            'make'                 => $validated['make'] ?? $variant->make,
+            'brand'                => $validated['brand'] ?? $variant->brand,
+            'weight'               => $validated['weight'] ?? $variant->weight,
+            'default_purchase_cost' => $validated['default_purchase_cost'] ?? $variant->default_purchase_cost,
+            'default_sales_price'   => $validated['default_sales_price'] ?? $variant->default_sales_price,
         ]);
 
         // Optionally update some stock fields
         if (isset($validated['stock_name']) || isset($validated['unit_measure'])) {
             $variant->stock->update([
-                'name'          => $validated['stock_name'] ?? $variant->stock->name,
-                'unit_measure'  => $validated['unit_measure'] ?? $variant->stock->unit_measure,
+                'name'         => $validated['stock_name'] ?? $variant->stock->name,
+                'unit_measure' => $validated['unit_measure'] ?? $variant->stock->unit_measure,
             ]);
         }
 
@@ -328,10 +324,4 @@ class IMSStockMarketingController extends Controller
             'variant' => $variant->fresh('stock'),
         ]);
     }
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

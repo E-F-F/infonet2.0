@@ -1,18 +1,18 @@
 <?php
 
-namespace Modules\HRMS\Http\Controllers;
+namespace Modules\IMS\Http\Controllers\Marketing;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class HRMSController extends Controller
+class IMSStockMarketingGRNController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('hrms::index');
+        return view('ims::index');
     }
 
     /**
@@ -20,7 +20,7 @@ class HRMSController extends Controller
      */
     public function create()
     {
-        return view('hrms::create');
+        return view('ims::create');
     }
 
     /**
@@ -33,7 +33,7 @@ class HRMSController extends Controller
      */
     public function show($id)
     {
-        return view('hrms::show');
+        return view('ims::show');
     }
 
     /**
@@ -41,7 +41,7 @@ class HRMSController extends Controller
      */
     public function edit($id)
     {
-        return view('hrms::edit');
+        return view('ims::edit');
     }
 
     /**

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes; // Import the SoftDeletes trait
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 /**
  * HRMSLeaveRank Model
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * This model represents the 'hrms_leave_rank' table.
  * It supports soft deletes.
  */
-class HRMSLeaveRank extends Model
+class HRMSLeaveModel extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,7 +24,7 @@ class HRMSLeaveRank extends Model
      *
      * @var string
      */
-    protected $table = 'hrms_leave_rank';
+    protected $table = 'hrms_leave_model';
 
     /**
      * The attributes that are mass assignable.
@@ -30,19 +32,22 @@ class HRMSLeaveRank extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'is_active',
+        'hrms_leave_type_id',
+        'hrms_leave_rank_id',
+        'year_of_service',
+        'entitled_days',
+        'carry_forward_days', // This is now interpreted as the MAX fixed carry-forward
     ];
-
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active' => 'boolean',
+        'year_of_service' => 'integer',
+        'entitled_days' => 'integer', // Assuming days are usually integers, adjust if float is common
+        'carry_forward_days' => 'float', // Keep as float for potential half-days or specific policies
     ];
-
     /**
      * The attributes that should be mutated to dates.
      *
@@ -52,13 +57,21 @@ class HRMSLeaveRank extends Model
         'deleted_at',
     ];
 
+
+
     /**
-     * Get the staff employment records associated with this leave rank.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Get the leave type that owns the leave model.
      */
-    public function employmentRecords(): HasMany
+    public function leaveType(): BelongsTo
     {
-        return $this->hasMany(HRMSStaffEmployment::class, 'hrms_leave_rank_id');
+        return $this->belongsTo(HrmsLeaveType::class, 'hrms_leave_type_id');
+    }
+
+    /**
+     * Get the leave rank that owns the leave model.
+     */
+    public function leaveRank(): BelongsTo
+    {
+        return $this->belongsTo(HrmsLeaveRank::class, 'hrms_leave_rank_id');
     }
 }
