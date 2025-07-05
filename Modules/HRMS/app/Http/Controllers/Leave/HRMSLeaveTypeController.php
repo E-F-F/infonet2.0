@@ -2,174 +2,199 @@
 
 namespace Modules\HRMS\Http\Controllers\Leave;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use Modules\HRMS\Models\HRMSLeaveType;
-use Illuminate\Support\Facades\DB; // Added for transaction handling
 
-/**
- * HRMSLeaveTypeController
- *
- * This API controller manages CRUD operations for HRMSLeaveType records.
- * It handles validation, creation, retrieval, updating, and deletion of leave types.
- */
 class HRMSLeaveTypeController extends Controller
 {
     /**
-     * Display a listing of the leave types.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
     public function index()
     {
         $leaveTypes = HRMSLeaveType::all();
-        // For API, return JSON data instead of a view
-        return response()->json($leaveTypes);
+        return response()->json([
+            'success' => true,
+            'message' => 'Leave types retrieved successfully.',
+            'data' => $leaveTypes
+        ]);
     }
 
     /**
-     * Display the specified leave type.
+     * Store a newly created resource in storage.
      *
-     * @param  int  $id The ID of the leave type.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
-    {
-        $leaveType = HRMSLeaveType::findOrFail($id); // Singular variable name
-        return response()->json($leaveType);
-    }
-
-    /**
-     * Store a newly created leave type in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request The incoming request.
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return Response
      */
     public function store(Request $request)
     {
-        // Define validation rules for creating a leave type
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:hrms_leave_type,name|max:255',
-            'is_active' => 'boolean', // Validate that is_active is a boolean if present
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
-        }
-
         try {
-            DB::beginTransaction();
-
-            $leaveType = HRMSLeaveType::create([
-                'name' => $request->name,
-                'is_active' => $request->has('is_active') ? (bool)$request->is_active : false, // Explicitly set to false if not present
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255|unique:hrms_leave_type,name',
+                'default_no_of_days' => 'required|integer|min:0',
+                'status' => 'required|string|in:active,inactive',
+                'earned_rules' => 'nullable|string|max:255',
+                'need_blocking' => 'boolean',
+                'leave_model' => 'boolean',
+                'allow_carry_forward' => 'boolean',
+                'require_attachment' => 'boolean',
+                'apply_by_hours' => 'boolean',
+                'apply_within_days' => 'nullable|integer|min:0',
+                'background_color' => 'nullable|string|max:7', // e.g., #RRGGBB
+                'remarks' => 'nullable|string',
+                'replacement_shift' => 'boolean',
             ]);
 
-            DB::commit();
-
+            $leaveType = HRMSLeaveType::create($validatedData);
             return response()->json([
                 'success' => true,
-                'message' => 'Leave type added successfully!',
+                'message' => 'Leave type created successfully.',
                 'data' => $leaveType
-            ], 201); // 201 Created
+            ], Response::HTTP_CREATED);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create leave type.',
-                'error' => $e->getMessage()
-            ], 500); // 500 Internal Server Error
+                'errors' => [$e->getMessage()]
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Update the specified leave type in storage.
+     * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request The incoming request.
-     * @param  int  $id The ID of the leave type to update.
-     * @return \Illuminate\Http\JsonResponse
+     * @param int $id
+     * @return Response
+     */
+    public function show($id)
+    {
+        $leaveType = HRMSLeaveType::find($id);
+
+        if (!$leaveType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Leave type not found.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Leave type retrieved successfully.',
+            'data' => $leaveType
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
      */
     public function update(Request $request, $id)
     {
-        $leaveType = HRMSLeaveType::findOrFail($id); // Singular variable name
+        $leaveType = HRMSLeaveType::find($id);
 
-        // Define validation rules for updating a leave type
-        $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|unique:hrms_leave_type,name,' . $id . '|max:255',
-            'is_active' => 'sometimes|boolean', // Validate that is_active is a boolean if present
-        ]);
-
-        if ($validator->fails()) {
+        if (!$leaveType) {
             return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422);
+                'success' => false,
+                'message' => 'Leave type not found.'
+            ], Response::HTTP_NOT_FOUND);
         }
 
         try {
-            DB::beginTransaction();
+            $validatedData = $request->validate([
+                'name' => 'sometimes|required|string|max:255|unique:hrms_leave_type,name,' . $id,
+                'default_no_of_days' => 'sometimes|required|integer|min:0',
+                'status' => 'sometimes|required|string|in:active,inactive',
+                'earned_rules' => 'nullable|string|max:255',
+                'need_blocking' => 'sometimes|required|boolean',
+                'leave_model' => 'sometimes|required|boolean',
+                'allow_carry_forward' => 'sometimes|required|boolean',
+                'require_attachment' => 'sometimes|required|boolean',
+                'apply_by_hours' => 'sometimes|required|boolean',
+                'apply_within_days' => 'nullable|integer|min:0',
+                'background_color' => 'nullable|string|max:7',
+                'remarks' => 'nullable|string',
+                'replacement_shift' => 'sometimes|required|boolean',
+            ]);
 
-            // Prepare data for update, ensuring 'is_active' is handled if present
-            $updateData = $request->only('name');
-            if ($request->has('is_active')) {
-                $updateData['is_active'] = (bool)$request->is_active;
-            }
-
-            $leaveType->update($updateData);
-
-            DB::commit();
-
+            $leaveType->update($validatedData);
             return response()->json([
                 'success' => true,
-                'message' => 'Leave type updated successfully!',
+                'message' => 'Leave type updated successfully.',
                 'data' => $leaveType
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update leave type.',
-                'error' => $e->getMessage()
-            ], 500);
+                'errors' => [$e->getMessage()]
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Remove the specified leave type from storage.
+     * Remove the specified resource from storage.
      *
-     * @param  int  $id The ID of the leave type to delete.
-     * @return \Illuminate\Http\JsonResponse
+     * @param int $id
+     * @return Response
      */
     public function destroy($id)
     {
-        $leaveType = HRMSLeaveType::findOrFail($id); // Singular variable name
+        $leaveType = HRMSLeaveType::find($id);
 
-        // Consider if there are any related 'HRMSLeave' records.
-        // If there are, you might want to prevent deletion, or soft delete them too,
-        // or reassign them. For now, we'll assume cascading delete or that it's okay
-        // if the database handles foreign key constraints (e.g., ON DELETE CASCADE)
-        // or if you're using soft deletes on HRMSLeave.
+        if (!$leaveType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Leave type not found.'
+            ], Response::HTTP_NOT_FOUND);
+        }
 
         try {
-            DB::beginTransaction();
-            $leaveType->delete();
-            DB::commit();
-
+            $leaveType->delete(); // Soft deletes the record
             return response()->json([
                 'success' => true,
-                'message' => 'Leave type deleted successfully (soft deleted).'
-            ]);
+                'message' => 'Leave type deleted successfully.'
+            ], Response::HTTP_OK);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete leave type.',
-                'error' => $e->getMessage()
-            ], 500);
+                'errors' => [$e->getMessage()]
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Display a listing of leave types where 'leave_model' is true.
+     *
+     * @return Response
+     */
+    public function listModelBasedLeaveTypes()
+    {
+        $leaveTypes = HRMSLeaveType::where('leave_model', 1)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Model-based leave types retrieved successfully.',
+            'data' => $leaveTypes
+        ]);
     }
 }

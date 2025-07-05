@@ -48,6 +48,22 @@ class HRMSStaffController extends Controller
         return HRMSStaffResource::collection($hrmsStaff);
     }
 
+    public function show($id)
+    {
+        $staff = HRMSStaff::with([
+            'auth.staffAccess.systemAccess',
+            'personal.children',
+            'employment.branch',
+            'employment.designation',
+            'employment.leaveRank',
+            'employment.payGroup',
+            'employment.appraisalType'
+        ])->findOrFail($id);
+
+        return new HRMSStaffResource($staff);
+    }
+
+
 
 
     /**

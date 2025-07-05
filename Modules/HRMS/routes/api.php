@@ -14,11 +14,13 @@ use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveRankController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveTypeController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveEntitlementController;
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveModelController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/staff', [HRMSStaffController::class, 'index']);
+        Route::get('/staff/{id}', [HRMSStaffController::class, 'index']);
         Route::post('/staff/create', [HRMSStaffController::class, 'createStaff']);
         Route::post('/staff/update/{id}', [HRMSStaffController::class, 'updateStaff']);
 
@@ -72,7 +74,11 @@ Route::middleware('module.access:hrms')->group(function () {
             // Leave Related API
             Route::apiResource('leave-ranks', HRMSLeaveRankController::class);
 
+            Route::get('leave-types/model-based', [HRMSLeaveTypeController::class, 'listModelBasedLeaveTypes']);
             Route::apiResource('leave-types', HRMSLeaveTypeController::class);
+
+
+            Route::apiResource('leave-models', HRMSLeaveModelController::class);
 
             Route::apiResource('leaves', HRMSLeaveController::class);
 
