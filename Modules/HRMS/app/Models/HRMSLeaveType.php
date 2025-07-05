@@ -35,7 +35,7 @@ class HRMSLeaveType extends Model
         'status',
         'earned_rules',
         'need_blocking',
-        'leave_model',
+        'leave_model', //boolean value indicating whether has it's a leave model or not make another api that list all leave type if leave model is true
         'allow_carry_forward', // New column
         'require_attachment',
         'apply_by_hours',
