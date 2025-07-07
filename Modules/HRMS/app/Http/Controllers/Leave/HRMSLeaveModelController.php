@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\HRMS\Models\HRMSLeaveModel;
+use Modules\HRMS\Models\HRMSLeaveType;
+use Illuminate\Validation\Rule;
 
 class HRMSLeaveModelController extends Controller
 {
@@ -44,7 +46,16 @@ class HRMSLeaveModelController extends Controller
                 'hrms_leave_rank_id.exists' => 'The selected leave rank does not exist.',
             ]);
 
+            $leaveType = HRMSLeaveType::findOrFail($validatedData['hrms_leave_type_id']);
+            if (! $leaveType->leave_model) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Leave Type cannot be used for leave model.',
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
             $leaveModel = HRMSLeaveModel::create($validatedData);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Leave model created successfully.',
@@ -118,6 +129,18 @@ class HRMSLeaveModelController extends Controller
                 'hrms_leave_type_id.exists' => 'The selected leave type does not exist.',
                 'hrms_leave_rank_id.exists' => 'The selected leave rank does not exist.',
             ]);
+
+            if (isset($validatedData['hrms_leave_type_id'])) {
+                $leaveType = HRMSLeaveType::findOrFail($validatedData['hrms_leave_type_id']);
+                if (! $leaveType->leave_model) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Leave Type cannot be used for leave model.',
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+            }
+
+
 
             $leaveModel->update($validatedData);
             return response()->json([

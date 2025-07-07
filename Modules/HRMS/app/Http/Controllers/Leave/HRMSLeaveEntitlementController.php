@@ -28,7 +28,7 @@ class HRMSLeaveEntitlementController extends Controller
      */
     public function index()
     {
-        $leaveEntitlements = HRMSLeaveEntitlement::with('staff')->paginate(10);
+        $leaveEntitlements = HRMSLeaveEntitlement::with('staff', 'leaveType')->paginate(10);
 
         return response()->json([
             'data' => $leaveEntitlements->items(),
@@ -51,7 +51,7 @@ class HRMSLeaveEntitlementController extends Controller
      */
     public function show($id)
     {
-        $leaveEntitlement = HRMSLeaveEntitlement::with('staff')->findOrFail($id);
+        $leaveEntitlement = HRMSLeaveEntitlement::with('staff', 'leaveType')->findOrFail($id);
         return response()->json($leaveEntitlement);
     }
 
@@ -64,62 +64,64 @@ class HRMSLeaveEntitlementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'hrms_staff_id' => 'required|integer|exists:hrms_staff,id',
-            'entitled_days' => 'required|numeric|min:0',
-            'year' => 'required|integer|min:2000|max:' . (Carbon::now()->addYears(5)->year), // Example year range
+            'hrms_staff_id'        => 'required|integer|exists:hrms_staff,id',
+            'hrms_leave_type_id'   => 'required|integer|exists:hrms_leave_type,id',
+            'entitled_days'        => 'required|numeric|min:0',
+            'year'                 => 'required|integer|min:2000|max:' . (Carbon::now()->addYears(5)->year),
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation Error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             DB::beginTransaction();
 
-            // Check for unique combination of staff_id and year
-            $existingEntitlement = HRMSLeaveEntitlement::where('hrms_staff_id', $request->hrms_staff_id)
+            $exists = HRMSLeaveEntitlement::where('hrms_staff_id', $request->hrms_staff_id)
+                ->where('hrms_leave_type_id', $request->hrms_leave_type_id)
                 ->where('year', $request->year)
                 ->first();
-            if ($existingEntitlement) {
+
+            if ($exists) {
                 DB::rollBack();
                 return response()->json([
                     'message' => 'Validation Error',
-                    'errors' => ['hrms_staff_id' => ['An entitlement already exists for this staff member in the specified year.']]
+                    'errors'  => ['unique' => ['Entitlement already exists for this staff, leave type, and year.']]
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            $entitledDays = (float)$request->entitled_days;
+            $entitled = (float) $request->entitled_days;
 
-            $leaveEntitlement = HRMSLeaveEntitlement::create([
-                'hrms_staff_id' => $request->hrms_staff_id,
-                'entitled_days' => $entitledDays,
-                'consumed_days' => 0.0, // Always start with 0 consumed days for a new entitlement
-                'remaining_days' => $entitledDays, // Remaining days are initially equal to entitled days
-                'year' => $request->year,
+            $entitlement = HRMSLeaveEntitlement::create([
+                'hrms_staff_id'       => $request->hrms_staff_id,
+                'hrms_leave_type_id'  => $request->hrms_leave_type_id,
+                'entitled_days'       => $entitled,
+                'consumed_days'       => 0.0,
+                'remaining_days'      => $entitled,
+                'year'                => $request->year,
             ]);
 
             DB::commit();
-
-            // Reload with staff relationship for response
-            $leaveEntitlement->load('staff');
+            $entitlement->load('staff');
 
             return response()->json([
                 'success' => true,
                 'message' => 'Leave entitlement created successfully!',
-                'data' => $leaveEntitlement
+                'data'    => $entitlement
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create leave entitlement.',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * Update the specified leave entitlement in storage.
@@ -134,90 +136,76 @@ class HRMSLeaveEntitlementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $leaveEntitlement = HRMSLeaveEntitlement::findOrFail($id);
+        $entitlement = HRMSLeaveEntitlement::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'entitled_days' => 'sometimes|required|numeric|min:0',
-            // 'consumed_days' and 'remaining_days' are usually managed by leave applications
-            // If you allow direct updates, add validation here and ensure consistency.
-            // For now, we'll assume they are not directly updated via this API.
-            'year' => 'sometimes|required|integer|min:2000|max:' . (Carbon::now()->addYears(5)->year),
-            // If staff_id is allowed to change, add validation and unique check
-            // 'hrms_staff_id' => 'sometimes|required|integer|exists:hrms_staff,id',
+            'entitled_days'       => 'sometimes|required|numeric|min:0',
+            'year'                => 'sometimes|required|integer|min:2000|max:' . (Carbon::now()->addYears(5)->year),
+            'hrms_leave_type_id'  => 'sometimes|required|integer|exists:hrms_leave_type,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation Error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             DB::beginTransaction();
 
-            $updateData = $request->only(['entitled_days', 'year']);
+            $input = $request->only(['entitled_days', 'year', 'hrms_leave_type_id']);
 
-            // Handle 'entitled_days' update: recalculate remaining_days
-            if (isset($updateData['entitled_days'])) {
-                $oldEntitledDays = $leaveEntitlement->entitled_days;
-                $newEntitledDays = (float)$updateData['entitled_days'];
+            // Handle entitled_days adjustment
+            if (isset($input['entitled_days'])) {
+                $diff = $input['entitled_days'] - $entitlement->entitled_days;
+                $input['remaining_days'] = $entitlement->remaining_days + $diff;
 
-                // Calculate the difference in entitlement
-                $entitlementDifference = $newEntitledDays - $oldEntitledDays;
-
-                // Update remaining_days based on the change in entitled_days
-                $updateData['remaining_days'] = $leaveEntitlement->remaining_days + $entitlementDifference;
-
-                // Ensure remaining_days doesn't go below zero if consumed days exceed new entitlement
-                if ($updateData['remaining_days'] < 0) {
-                    // This scenario means the new entitlement is less than already consumed days.
-                    // You might want to prevent this or adjust consumed_days/remaining_days accordingly.
-                    // For simplicity, we'll just set remaining to 0 and adjust consumed if needed.
-                    $updateData['remaining_days'] = 0.0;
-                    $updateData['consumed_days'] = $newEntitledDays; // All new entitled days are consumed
+                if ($input['remaining_days'] < 0) {
+                    $input['remaining_days'] = 0.0;
+                    $input['consumed_days'] = $input['entitled_days']; // all used
                 }
             }
 
-            // If year or staff_id is updated, ensure uniqueness
-            if ($request->has('year') || $request->has('hrms_staff_id')) {
-                $newStaffId = $request->input('hrms_staff_id', $leaveEntitlement->hrms_staff_id);
-                $newYear = $request->input('year', $leaveEntitlement->year);
+            // Composite uniqueness check
+            $newYear = $input['year'] ?? $entitlement->year;
+            $newLeaveType = $input['hrms_leave_type_id'] ?? $entitlement->hrms_leave_type_id;
+            $newStaffId = $entitlement->hrms_staff_id;
 
-                $existingEntitlement = HRMSLeaveEntitlement::where('hrms_staff_id', $newStaffId)
-                    ->where('year', $newYear)
-                    ->where('id', '!=', $id) // Exclude current record
-                    ->first();
-                if ($existingEntitlement) {
-                    DB::rollBack();
-                    return response()->json([
-                        'message' => 'Validation Error',
-                        'errors' => ['unique_combination' => ['An entitlement already exists for this staff member in the specified year.']]
-                    ], Response::HTTP_UNPROCESSABLE_ENTITY);
-                }
+            $conflict = HRMSLeaveEntitlement::where('hrms_staff_id', $newStaffId)
+                ->where('hrms_leave_type_id', $newLeaveType)
+                ->where('year', $newYear)
+                ->where('id', '!=', $entitlement->id)
+                ->exists();
+
+            if ($conflict) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Validation Error',
+                    'errors'  => ['unique' => ['Another entitlement already exists for this staff, leave type, and year.']]
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            $leaveEntitlement->update($updateData);
+            $entitlement->update($input);
+            $entitlement->load('staff');
 
             DB::commit();
-
-            // Reload with staff relationship for response
-            $leaveEntitlement->load('staff');
 
             return response()->json([
                 'success' => true,
                 'message' => 'Leave entitlement updated successfully!',
-                'data' => $leaveEntitlement
+                'data'    => $entitlement
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update leave entitlement.',
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * Remove the specified leave entitlement from storage.
