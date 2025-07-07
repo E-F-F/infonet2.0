@@ -15,6 +15,8 @@ use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveTypeController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveEntitlementController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveModelController;
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentController;
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentReasonController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -83,6 +85,18 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('leaves', HRMSLeaveController::class);
 
             Route::apiResource('leave-entitlements', HRMSLeaveEntitlementController::class);
+
+            // HRMSLeaveAdjustment API Endpoints
+            Route::apiResource('leave-adjustments', HRMSLeaveAdjustmentController::class);
+
+            // HRMSLeaveAdjustmentReason API Endpoints
+            Route::apiResource('leave-adjustment-reasons', HRMSLeaveAdjustmentReasonController::class);
+
+            // // Additional routes for soft deletes (if needed for reasons)
+            // Route::prefix('leave-adjustment-reasons')->group(function () {
+            //     Route::patch('{id}/restore', [HRMSLeaveAdjustmentReasonController::class, 'restore'])->name('leave-adjustment-reasons.restore');
+            //     Route::delete('{id}/force-delete', [HRMSLeaveAdjustmentReasonController::class, 'forceDelete'])->name('leave-adjustment-reasons.forceDelete');
+            // });
         });
     });
 

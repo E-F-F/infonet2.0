@@ -72,7 +72,7 @@ return new class extends Migration
             $table->foreignId('hrms_staff_id')->nullable()->constrained('hrms_staff')->onDelete('cascade');
             $table->foreignId('hrms_leave_type_id')->nullable()->constrained('hrms_leave_type')->onDelete('cascade');
             $table->foreignId('adjustment_reason_id')->nullable()->constrained('hrms_leave_adjustment_reason')->onDelete('cascade');
-            $table->unsignedInteger('days'); // Number of days being adjusted
+            $table->decimal('days', 8, 2);
             $table->date('effective_date'); // Date on which the adjustment becomes effective
             $table->text('remarks')->nullable(); // Additional details about the adjustment
             $table->timestamps(); // Adds created_at and updated_at columns
