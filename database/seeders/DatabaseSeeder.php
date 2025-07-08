@@ -18,6 +18,7 @@ use Modules\HRMS\Models\HRMSLeaveType;
 use Modules\HRMS\Models\HRMSLeaveModel;
 use Modules\HRMS\Models\HRMSLeaveEntitlement;
 use Modules\HRMS\Models\HRMSLeaveAdjustmentReason;
+use Modules\HRMS\Models\HRMSDepartment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -39,19 +40,49 @@ class DatabaseSeeder extends Seeder
 
             // 2. Create a Branch linked to the Company
             $branch = Branch::firstOrCreate(
-                ['company_id' => $company->id, 'name' => 'HQ Branch'],
-                ['is_active' => true]
+                [
+                    'branch_of' => $company->id, // or 'company_id' if you renamed the column
+                    'name' => 'HQ Branch',
+                ],
+                [
+                    'code' => 'HQ001',
+                    'address' => '123 Main Road, City Center, 88000 Kota Kinabalu',
+                    'print_name' => 'HQ - Main Office',
+                    'company_reg_no' => '1234567-A',
+                    'description' => 'Headquarters branch handling all central operations.',
+                    'work_minutes_per_day' => 480, // 8 hours * 60 minutes
+                    'epf_employer_no' => 'EPF123456',
+                    'contact_person_name' => 'John Doe',
+                    'contact_phone_no' => '012-3456789',
+                    'socso_employer_no' => 'SOCSO123456',
+                    'lhdn_employer_no' => 'LHDN123456',
+                    'hrdp_no' => 'HRDP7890',
+                    'bank_account_no' => '123-456-789012',
+                    'is_active' => true
+                ]
             );
 
+
             // 3. Create HRMS Lookup Data (Designation, Leave Rank, Pay Group, Appraisal Type)
-            $designation = HRMSDesignation::firstOrCreate(
-                ['name' => 'Software Engineer'],
+            $department = HRMSDepartment::firstOrCreate( // Assuming this exists in your context
+                ['name' => 'IT Department'],
+                ['code' => 'IT'],
                 ['is_active' => true]
             );
 
             $leaveRank = HRMSLeaveRank::firstOrCreate(
                 ['name' => 'Senior Staff'],
                 ['is_active' => true]
+            );
+
+            $designation = HRMSDesignation::firstOrCreate(
+                ['name' => 'Software Engineer'],
+                [
+                    'hrms_department_id' => $department->id,
+                    'parent_designation_id' => null,
+                    'hrms_leave_rank_id' => $leaveRank->id,
+                    'is_active' => true
+                ]
             );
 
             $payGroup = HRMSPayGroup::firstOrCreate(
