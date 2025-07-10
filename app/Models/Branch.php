@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Branch extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -29,8 +30,21 @@ class Branch extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'company_id',
+        'branch_of',
         'name',
+        'code',
+        'address',
+        'print_name',
+        'company_reg_no',
+        'description',
+        'work_minutes_per_day',
+        'epf_employer_no',
+        'contact_person_name',
+        'contact_phone_no',
+        'socso_employer_no',
+        'lhdn_employer_no',
+        'hrdp_no',
+        'bank_account_no',
         'is_active',
     ];
 
@@ -41,16 +55,17 @@ class Branch extends Model
      */
     protected $casts = [
         'is_active' => 'boolean',
+        'work_minutes_per_day' => 'integer',
     ];
 
     /**
-     * Get the company that the branch belongs to.
+     * Get the company this branch belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        return $this->belongsTo(Company::class, 'branch_of');
     }
 
     /**

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * This model represents the 'hrms_designation' table.
  * It supports soft deletes.
  */
-class HRMSDesignation extends Model
+class HRMSDepartment extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -22,7 +22,7 @@ class HRMSDesignation extends Model
      *
      * @var string
      */
-    protected $table = 'hrms_designation';
+    protected $table = 'hrms_department';
 
     /**
      * The attributes that are mass assignable.
@@ -31,19 +31,8 @@ class HRMSDesignation extends Model
      */
     protected $fillable = [
         'name',
-        'hrms_department_id',
-        'parent_designation_id',
-        'hrms_leave_rank_id',
+        'code',
         'is_active',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'is_active' => 'boolean',
     ];
 
     /**
@@ -60,28 +49,8 @@ class HRMSDesignation extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function employmentRecords(): HasMany
+    public function designations(): HasMany
     {
-        return $this->hasMany(HRMSStaffEmployment::class, 'hrms_designation_id');
-    }
-
-    public function department()
-    {
-        return $this->belongsTo(HRMSDepartment::class, 'hrms_department_id');
-    }
-
-    public function parentDesignation()
-    {
-        return $this->belongsTo(HRMSDesignation::class, 'parent_designation_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(HRMSDesignation::class, 'parent_designation_id');
-    }
-
-    public function leaveRank()
-    {
-        return $this->belongsTo(HRMSLeaveRank::class, 'hrms_leave_rank_id');
+        return $this->hasMany(HRMSDesignation::class, 'hrms_department_id');
     }
 }
