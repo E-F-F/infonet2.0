@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('hrms_staff_personal', function (Blueprint $table) {
             $table->id();
             // Personal Details
@@ -86,11 +85,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::dropIfExists('hrms_staff_dependent_child');
         Schema::dropIfExists('hrms_staff_personal');
     }
 };

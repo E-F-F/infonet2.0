@@ -6,20 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('hrms_department', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->string('code')->unique();
-            $table->boolean('is_active')->default(true)->nullable(false); // is active or not
-            $table->softDeletes(); // deleted at field for soft delete (null if record is active)
-            $table->timestamps();
-        });
-
         Schema::create('hrms_designation', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
@@ -32,12 +20,8 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('hrms_designation');
-        Schema::dropIfExists('hrms_department');
     }
 };
