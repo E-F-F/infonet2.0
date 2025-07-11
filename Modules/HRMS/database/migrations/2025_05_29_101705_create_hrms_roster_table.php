@@ -75,7 +75,7 @@ return new class extends Migration
             $table->integer('ot_minimum_minutes')->nullable();
             $table->integer('ot_days')->nullable();
             $table->string('type_for_leave')->nullable();
-            $table->enum('status', ['active', 'disabled'])->default(false);
+            $table->enum('status', ['active', 'disabled'])->default('active');
             $table->foreignId('branch_id')->nullable()->constrained('branch')->onDelete('cascade');
             $table->boolean('allowed_thumbprint_once')->default(false);
             $table->string('background_color')->nullable();
@@ -123,12 +123,21 @@ return new class extends Migration
             $table->date('effective_date');
             $table->timestamps();
         });
+
+        Schema::create('hrms_staff_roster_group_assignment', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('hrms_staff_id')->constrained('hrms_staff')->onDelete('cascade');
+            $table->foreignId('roster_group_id')->constrained('hrms_roster_group')->onDelete('cascade');
+            $table->date('effective_date'); // When this assignment starts
+            $table->timestamps();
+        });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('hrms_roster');
         Schema::dropIfExists('hrms_roster_shift');
         Schema::dropIfExists('hrms_offday');

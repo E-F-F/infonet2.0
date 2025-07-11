@@ -105,21 +105,21 @@ return new class extends Migration
         Schema::create('hrms_roster_group', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->enum('status', ['active', 'disabled'])->default(false);
+            // $table->enum('status', ['active', 'disabled'])->default('false');
+            $table->boolean('is_active')->default(true)->nullable(false); // is active or not
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('hrms_leave_rank');
-        Schema::dropIfExists('hrms_appraisal_type');
-        Schema::dropIfExists('hrms_pay_group');
-        Schema::dropIfExists('hrms_department');
-        Schema::dropIfExists('hrms_pay_level');
-        Schema::dropIfExists('hrms_pay_batch_type');
+        Schema::dropIfExists('hrms_leave_rank'); //
+        Schema::dropIfExists('hrms_appraisal_type'); //
+        Schema::dropIfExists('hrms_pay_group'); //
+        Schema::dropIfExists('hrms_department'); //
+        Schema::dropIfExists('hrms_pay_level'); //
+        Schema::dropIfExists('hrms_pay_batch_type');//
         Schema::dropIfExists('hrms_resign_option');
-
         Schema::dropIfExists('hrms_offence_type');
         Schema::dropIfExists('hrms_training_type');
         Schema::dropIfExists('hrms_training_award_type');
