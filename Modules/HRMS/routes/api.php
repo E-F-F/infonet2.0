@@ -19,6 +19,8 @@ use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentReasonController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSOffdayController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSHolidayController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterShiftController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterGroupController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -103,6 +105,10 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('offdays', HRMSOffdayController::class);
 
             Route::apiResource('holidays', HRMSHolidayController::class);
+
+            Route::apiResource('roster-group', HRMSRosterGroupController::class);
+
+            Route::apiResource('roster-shift', HRMSRosterShiftController::class);
         });
     });
 
