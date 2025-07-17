@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
 
             // 2. Create a Branch linked to the Company
             $branch = Branch::firstOrCreate(
-                ['company_id' => $company->id, 'name' => 'HQ Branch'],
+                ['company_id' => $company->id, 'name' => 'HQ Kota Kinabalu', 'code' => 'HQKK', 'description' => 'Headquarters for Kota Kinabalu'],
                 ['is_active' => true]
             );
 

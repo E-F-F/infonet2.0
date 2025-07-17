@@ -31,6 +31,8 @@ class Branch extends Model
     protected $fillable = [
         'company_id',
         'name',
+        'code',
+        'description',
         'is_active',
     ];
 
