@@ -103,7 +103,7 @@ return new class extends Migration {
             $table->foreignId('hrms_staff_id')->nullable()->constrained('hrms_staff')->onDelete('cascade'); // optional
             $table->timestamps();
 
-            $table->unique(['roster_id', 'roster_date', 'hrms_staff_id']);
+            $table->unique(['roster_id', 'roster_date', 'hrms_staff_id'], 'roster_day_unique');
         });
 
         Schema::create('hrms_staff_roster_group_assignment', function (Blueprint $table) {

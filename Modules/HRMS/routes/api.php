@@ -21,6 +21,7 @@ use Modules\HRMS\Http\Controllers\Roster\HRMSOffdayController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSHolidayController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterShiftController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterGroupController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -102,6 +103,7 @@ Route::middleware('module.access:hrms')->group(function () {
             //     Route::delete('{id}/force-delete', [HRMSLeaveAdjustmentReasonController::class, 'forceDelete'])->name('leave-adjustment-reasons.forceDelete');
             // });
 
+            // Roster
             Route::apiResource('offdays', HRMSOffdayController::class);
 
             Route::apiResource('holidays', HRMSHolidayController::class);
@@ -109,6 +111,13 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('roster-group', HRMSRosterGroupController::class);
 
             Route::apiResource('roster-shift', HRMSRosterShiftController::class);
+
+            Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);
+            Route::get('roster/staff-shift/{id}', [HRMSRosterController::class, 'getStaffShift']);
+            
+            // Route::get('events/{id}', [HRMSEventController::class, 'show']);
+            // Route::put('events/{id}', [HRMSEventController::class, 'update']);
+            // Route::delete('events/{id}', [HRMSEventController::class, 'destroy']);
         });
     });
 
