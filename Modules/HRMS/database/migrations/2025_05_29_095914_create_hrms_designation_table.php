@@ -6,23 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('hrms_designation', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->foreignId('hrms_department_id')->nullable()->constrained('hrms_department')->onDelete('cascade');
+            $table->foreignId('parent_designation_id')->nullable()->constrained('hrms_designation')->onDelete('cascade');
+            $table->foreignId('hrms_leave_rank_id')->nullable()->constrained('hrms_leave_rank')->onDelete('cascade');
             $table->boolean('is_active')->default(true)->nullable(false); // is active or not
             $table->softDeletes(); // deleted at field for soft delete (null if record is active)
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('hrms_designation');

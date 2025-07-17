@@ -18,6 +18,7 @@ use Modules\HRMS\Models\HRMSLeaveType;
 use Modules\HRMS\Models\HRMSLeaveModel;
 use Modules\HRMS\Models\HRMSLeaveEntitlement;
 use Modules\HRMS\Models\HRMSLeaveAdjustmentReason;
+use Modules\HRMS\Models\HRMSDepartment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -43,15 +44,27 @@ class DatabaseSeeder extends Seeder
                 ['is_active' => true]
             );
 
+
             // 3. Create HRMS Lookup Data (Designation, Leave Rank, Pay Group, Appraisal Type)
-            $designation = HRMSDesignation::firstOrCreate(
-                ['name' => 'Software Engineer'],
+            $department = HRMSDepartment::firstOrCreate( // Assuming this exists in your context
+                ['name' => 'IT Department'],
+                ['code' => 'IT'],
                 ['is_active' => true]
             );
 
             $leaveRank = HRMSLeaveRank::firstOrCreate(
                 ['name' => 'Senior Staff'],
                 ['is_active' => true]
+            );
+
+            $designation = HRMSDesignation::firstOrCreate(
+                ['name' => 'Software Engineer'],
+                [
+                    'hrms_department_id' => $department->id,
+                    'parent_designation_id' => null,
+                    'hrms_leave_rank_id' => $leaveRank->id,
+                    'is_active' => true
+                ]
             );
 
             $payGroup = HRMSPayGroup::firstOrCreate(

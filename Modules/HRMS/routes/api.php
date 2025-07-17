@@ -15,6 +15,13 @@ use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveTypeController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveEntitlementController;
 use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveModelController;
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentController;
+use Modules\HRMS\Http\Controllers\Leave\HRMSLeaveAdjustmentReasonController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSOffdayController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSHolidayController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterShiftController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterGroupController;
+use Modules\HRMS\Http\Controllers\Roster\HRMSRosterController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -83,6 +90,34 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('leaves', HRMSLeaveController::class);
 
             Route::apiResource('leave-entitlements', HRMSLeaveEntitlementController::class);
+
+            // HRMSLeaveAdjustment API Endpoints
+            Route::apiResource('leave-adjustments', HRMSLeaveAdjustmentController::class);
+
+            // HRMSLeaveAdjustmentReason API Endpoints
+            Route::apiResource('leave-adjustment-reasons', HRMSLeaveAdjustmentReasonController::class);
+
+            // // Additional routes for soft deletes (if needed for reasons)
+            // Route::prefix('leave-adjustment-reasons')->group(function () {
+            //     Route::patch('{id}/restore', [HRMSLeaveAdjustmentReasonController::class, 'restore'])->name('leave-adjustment-reasons.restore');
+            //     Route::delete('{id}/force-delete', [HRMSLeaveAdjustmentReasonController::class, 'forceDelete'])->name('leave-adjustment-reasons.forceDelete');
+            // });
+
+            // Roster
+            Route::apiResource('offdays', HRMSOffdayController::class);
+
+            Route::apiResource('holidays', HRMSHolidayController::class);
+
+            Route::apiResource('roster-group', HRMSRosterGroupController::class);
+
+            Route::apiResource('roster-shift', HRMSRosterShiftController::class);
+
+            Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);
+            Route::get('roster/staff-shift/{id}', [HRMSRosterController::class, 'getStaffShift']);
+            
+            // Route::get('events/{id}', [HRMSEventController::class, 'show']);
+            // Route::put('events/{id}', [HRMSEventController::class, 'update']);
+            // Route::delete('events/{id}', [HRMSEventController::class, 'destroy']);
         });
     });
 
