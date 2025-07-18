@@ -22,6 +22,8 @@ use Modules\HRMS\Http\Controllers\Roster\HRMSHolidayController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterShiftController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterGroupController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterController;
+use Modules\HRMS\Http\Controllers\HRMSDesignationController;
+use Modules\HRMS\Http\Controllers\DepartmentController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -77,6 +79,15 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::get('events/{id}', [HRMSEventController::class, 'show']);
             Route::put('events/{id}', [HRMSEventController::class, 'update']);
             Route::delete('events/{id}', [HRMSEventController::class, 'destroy']);
+
+            Route::get('departments', [DepartmentController::class, 'index']);       // GET all
+            Route::post('departments', [DepartmentController::class, 'store']);      // POST new
+            Route::get('departments/{id}', [DepartmentController::class, 'show']);   // GET one
+            Route::put('departments/{id}', [DepartmentController::class, 'update']); // PUT update
+            Route::delete('departments/{id}', [DepartmentController::class, 'destroy']);
+
+            Route::get('designations', [HRMSDesignationController::class, 'index']);
+            Route::post('designations', [HRMSDesignationController::class, 'store']);
 
             // Leave Related API
             Route::apiResource('leave-ranks', HRMSLeaveRankController::class);

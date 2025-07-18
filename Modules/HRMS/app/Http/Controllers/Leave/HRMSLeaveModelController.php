@@ -40,7 +40,7 @@ class HRMSLeaveModelController extends Controller
                 'hrms_leave_rank_id' => 'required|integer|exists:hrms_leave_rank,id',
                 'year_of_service' => 'required|integer|min:0',
                 'entitled_days' => 'required|integer|min:0',
-                'carry_forward_days' => 'required|numeric|min:0', // Can be float
+                // 'carry_forward_days' => 'required|numeric|min:0', // Can be float
             ], [
                 'hrms_leave_type_id.exists' => 'The selected leave type does not exist.',
                 'hrms_leave_rank_id.exists' => 'The selected leave rank does not exist.',

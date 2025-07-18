@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\HRMS\Models\HRMSDesignation; // Ensure this matches your model's actual namespace
 use Illuminate\Validation\Rule;
+use Modules\HRMS\Transformers\HRMSDesignationResource; // Ensure this matches your resource's actual namespace
 
 class HRMSDesignationController extends Controller
 {
@@ -14,14 +15,15 @@ class HRMSDesignationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = HRMSDesignation::query();
+        $query = HRMSDesignation::with(['department', 'parentDesignation', 'leaveRank']);
 
         if ($search = $request->get('search')) {
             $query->where('name', 'like', "%{$search}%");
         }
 
         $designations = $query->get();
-        return view('hrms::designation.index', compact('designations'));
+
+        return HRMSDesignationResource::collection($designations);
     }
 
     /**
@@ -37,26 +39,36 @@ class HRMSDesignationController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate incoming request data
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:hrms_designation,name',
-            // 'is_active' => 'boolean', // is_active is optional, defaults to true in migration
+            'hrms_department_id' => 'nullable|exists:hrms_department,id',
+            'parent_designation_id' => 'nullable|exists:hrms_designation,id',
+            'hrms_leave_rank_id' => 'nullable|exists:hrms_leave_rank,id',
+            'is_active' => 'sometimes|boolean',
         ]);
 
         try {
-            HRMSDesignation::create([
-                'name' => $request->input('name'),
-                // 'is_active' => $request->has('is_active'), // Check if checkbox is ticked
+            $designation = HRMSDesignation::create([
+                'name' => $validated['name'],
+                'hrms_department_id' => $validated['hrms_department_id'] ?? null,
+                'parent_designation_id' => $validated['parent_designation_id'] ?? null,
+                'hrms_leave_rank_id' => $validated['hrms_leave_rank_id'] ?? null,
+                'is_active' => $request->has('is_active') ? (bool) $validated['is_active'] : true,
             ]);
 
-            return redirect()->route('hrms.designation.index')
-                ->with('success', 'Designation created successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Designation created successfully.',
+                'data' => $designation->load(['department', 'parentDesignation', 'leaveRank']),
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Error creating designation: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating designation: ' . $e->getMessage(),
+            ], 500);
         }
     }
+
 
     /**
      * Show the specified resource.
