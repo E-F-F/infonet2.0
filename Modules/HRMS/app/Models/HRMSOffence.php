@@ -36,7 +36,7 @@ class HRMSOffence extends Model
         'issue_date',
         'hrms_offence_type_id',
         'description',
-        'action_taken',
+        'hrms_offence_action_taken_id',
         'created_by',
         'updated_by',
     ];
@@ -87,6 +87,11 @@ class HRMSOffence extends Model
     public function offenceType(): BelongsTo
     {
         return $this->belongsTo(HRMSOffenceType::class, 'hrms_offence_type_id');
+    }
+    
+    public function actionTaken(): BelongsTo
+    {
+        return $this->belongsTo(HRMSOffenceActionTaken::class, 'hrms_offence_action_taken_id');
     }
 
     /**

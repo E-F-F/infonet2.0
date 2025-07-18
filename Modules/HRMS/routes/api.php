@@ -7,6 +7,7 @@ use Modules\HRMS\Http\Controllers\Training\HRMSTrainingAwardTypeController;
 use Modules\HRMS\Http\Controllers\Training\HRMSTrainingTypeController;
 use Modules\HRMS\Http\Controllers\Training\HRMSTrainingController;
 use Modules\HRMS\Http\Controllers\Offence\HRMSOffenceTypeController;
+use Modules\HRMS\Http\Controllers\Offence\HRMSOffenceActionTakenController;
 use Modules\HRMS\Http\Controllers\Offence\HRMSOffenceController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventTypeController;
 use Modules\HRMS\Http\Controllers\Event\HRMSEventController;
@@ -22,7 +23,9 @@ use Modules\HRMS\Http\Controllers\Roster\HRMSHolidayController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterShiftController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterGroupController;
 use Modules\HRMS\Http\Controllers\Roster\HRMSRosterController;
-use Modules\HRMS\Http\Controllers\HRMSDesignationController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSDesignationController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSDepartmentController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSResignOptionController;
 use Modules\HRMS\Http\Controllers\DepartmentController;
 
 // HRMS Module Routes - require 'hrms' access
@@ -34,6 +37,12 @@ Route::middleware('module.access:hrms')->group(function () {
         Route::post('/staff/update/{id}', [HRMSStaffController::class, 'updateStaff']);
 
         Route::prefix('hrms')->group(function () {
+            // Staff Related Api
+            Route::apiResource('designations', HRMSDesignationController::class);
+
+            Route::apiResource('departments', HRMSDepartmentController::class);
+
+            Route::apiResource('resign-options', HRMSResignOptionController::class);
             // Training Related API
             Route::get('training-award-types', [HRMSTrainingAwardTypeController::class, 'index']);
             Route::post('training-award-types', [HRMSTrainingAwardTypeController::class, 'store']);
@@ -61,6 +70,8 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::put('offence-types/{id}', [HRMSOffenceTypeController::class, 'update']);
             Route::delete('offence-types/{id}', [HRMSOffenceTypeController::class, 'destroy']);
 
+            Route::apiResource('offence-action-taken', HRMSOffenceActionTakenController::class);
+
             Route::get('offences', [HRMSOffenceController::class, 'index']);
             Route::post('offences', [HRMSOffenceController::class, 'store']);
             Route::get('offences/{id}', [HRMSOffenceController::class, 'show']);
@@ -80,14 +91,9 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::put('events/{id}', [HRMSEventController::class, 'update']);
             Route::delete('events/{id}', [HRMSEventController::class, 'destroy']);
 
-            Route::get('departments', [DepartmentController::class, 'index']);       // GET all
-            Route::post('departments', [DepartmentController::class, 'store']);      // POST new
-            Route::get('departments/{id}', [DepartmentController::class, 'show']);   // GET one
-            Route::put('departments/{id}', [DepartmentController::class, 'update']); // PUT update
-            Route::delete('departments/{id}', [DepartmentController::class, 'destroy']);
 
-            Route::get('designations', [HRMSDesignationController::class, 'index']);
-            Route::post('designations', [HRMSDesignationController::class, 'store']);
+
+
 
             // Leave Related API
             Route::apiResource('leave-ranks', HRMSLeaveRankController::class);
@@ -125,20 +131,6 @@ Route::middleware('module.access:hrms')->group(function () {
 
             Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);
             Route::get('roster/staff-shift/{id}', [HRMSRosterController::class, 'getStaffShift']);
-            
-            // Route::get('events/{id}', [HRMSEventController::class, 'show']);
-            // Route::put('events/{id}', [HRMSEventController::class, 'update']);
-            // Route::delete('events/{id}', [HRMSEventController::class, 'destroy']);
         });
-    });
-
-    // IMS Module Routes - require 'ims' access
-    Route::middleware('module.access:ims')->group(function () {
-        // ... IMS routes
-    });
-
-    // FMS Module Routes - require 'fms' access
-    Route::middleware('module.access:fms')->group(function () {
-        // ... FMS routes
     });
 });

@@ -19,6 +19,15 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('hrms_marital_status', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('code');
+            $table->boolean('is_active')->default(true)->nullable(false); // is active or not
+            $table->softDeletes(); // deleted at field for soft delete (null if record is active)
+            $table->timestamps();
+        });
+
         Schema::create('hrms_appraisal_type', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
@@ -78,6 +87,13 @@ return new class extends Migration
             $table->softDeletes(); // deleted at field for soft delete (null if record is active)
             $table->timestamps();
         });
+        Schema::create('hrms_offence_action_taken', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->boolean('is_active')->default(true)->nullable(false); // is active or not
+            $table->softDeletes(); // deleted at field for soft delete (null if record is active)
+            $table->timestamps();
+        });
 
         Schema::create('hrms_training_type', function (Blueprint $table) {
             $table->id();
@@ -114,11 +130,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('hrms_leave_rank'); //
+        Schema::dropIfExists('hrms_marital_status'); //
         Schema::dropIfExists('hrms_appraisal_type'); //
         Schema::dropIfExists('hrms_pay_group'); //
         Schema::dropIfExists('hrms_department'); //
         Schema::dropIfExists('hrms_pay_level'); //
-        Schema::dropIfExists('hrms_pay_batch_type');//
+        Schema::dropIfExists('hrms_pay_batch_type'); //
         Schema::dropIfExists('hrms_resign_option');
         Schema::dropIfExists('hrms_offence_type');
         Schema::dropIfExists('hrms_training_type');

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('issue_date');
             $table->foreignId('hrms_offence_type_id')->constrained('hrms_offence_type')->onDelete('cascade');
             $table->text('description');
-            $table->string('action_taken');
+            $table->foreignId('hrms_offence_action_taken_id')->constrained('hrms_offence_action_taken')->onDelete('cascade');
             $table->timestamps();
             $table->foreignId('created_by')->nullable()->constrained('hrms_staff')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('hrms_staff')->nullOnDelete();

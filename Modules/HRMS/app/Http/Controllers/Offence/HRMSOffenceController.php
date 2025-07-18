@@ -1,17 +1,16 @@
 <?php
 
-namespace Modules\HRMS\Http\Controllers\Offence; // Assuming a 'Disciplinary' folder for offences
+namespace Modules\HRMS\Http\Controllers\Offence;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB; // For database transactions
-
-// Import all related models
+use Illuminate\Support\Facades\DB;
 use Modules\HRMS\Models\HRMSOffence;
 use Modules\HRMS\Models\HRMSOffenceType;
-use Modules\HRMS\Models\HRMSStaff; // Assuming this model exists for staff validation
-use App\Models\Branch; // Assuming this model exists for branch validation
+use Modules\HRMS\Models\HRMSOffenceActionTaken;
+use Modules\HRMS\Models\HRMSStaff;
+use App\Models\Branch;
 
 /**
  * HRMSOffenceController
@@ -24,20 +23,17 @@ class HRMSOffenceController extends Controller
     /**
      * Display a listing of the offence records.
      *
-     * Eager loads related models (branch, staff, offenceType, creator, updater)
-     * to prevent N+1 query issues and provide comprehensive data.
-     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        // Eager load relationships for efficient data retrieval
         $offences = HRMSOffence::with([
             'branch',
-            'staff', // The staff member who committed the offence
+            'staff',
             'offenceType',
-            'creator', // The staff member who created the record
-            'updater'  // The staff member who last updated the record
+            'actionTaken',
+            'creator',
+            'updater'
         ])->get();
 
         return response()->json($offences);
@@ -45,8 +41,6 @@ class HRMSOffenceController extends Controller
 
     /**
      * Display the specified offence record.
-     *
-     * Eager loads related models for a complete view of the offence.
      *
      * @param  int  $id The ID of the offence record.
      * @return \Illuminate\Http\JsonResponse
@@ -57,9 +51,10 @@ class HRMSOffenceController extends Controller
             'branch',
             'staff',
             'offenceType',
+            'actionTaken',
             'creator',
             'updater'
-        ])->findOrFail($id); // findOrFail will automatically return a 404 if not found
+        ])->findOrFail($id);
 
         return response()->json($offence);
     }
@@ -67,94 +62,18 @@ class HRMSOffenceController extends Controller
     /**
      * Store a newly created offence record in storage.
      *
-     * Handles creation of the main offence record within a database transaction.
-     * The 'created_by' field is assumed to be the ID of the authenticated staff member.
-     *
      * @param  \Illuminate\Http\Request  $request The incoming request.
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        // Define validation rules for creating an offence record
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|integer|exists:branch,id',
             'hrms_staff_id' => 'required|integer|exists:hrms_staff,id',
             'issue_date' => 'required|date',
             'hrms_offence_type_id' => 'required|integer|exists:hrms_offence_type,id',
             'description' => 'required|string',
-            'action_taken' => 'nullable|string', // Action taken can be optional
-            // 'created_by' is typically set by the system (authenticated user)
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); // 422 Unprocessable Entity
-        }
-
-        try {
-            DB::beginTransaction();
-
-            // Assuming you have an authenticated user and can get their staff ID
-            // For demonstration, let's use a placeholder. In a real app, you'd get this from Auth::id() or similar.
-            $authenticatedStaffId = 1; // TODO: Replace with actual authenticated staff ID (e.g., Auth::user()->hrms_staff_id)
-
-            // Create the offence record
-            $offence = HRMSOffence::create([
-                'branch_id' => $request->branch_id,
-                'hrms_staff_id' => $request->hrms_staff_id,
-                'issue_date' => $request->issue_date,
-                'hrms_offence_type_id' => $request->hrms_offence_type_id,
-                'description' => $request->description,
-                'action_taken' => $request->action_taken,
-                'created_by' => $authenticatedStaffId, // Set the creator
-                'updated_by' => $authenticatedStaffId, // Initial updater is also the creator
-            ]);
-
-            DB::commit(); // Commit the transaction
-
-            // Reload the offence with relationships for the response
-            $offence->load(['branch', 'staff', 'offenceType', 'creator', 'updater']);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Offence record created successfully!',
-                'data' => $offence
-            ], 201); // 201 Created
-        } catch (\Exception $e) {
-            DB::rollBack(); // Rollback on error
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create offence record.',
-                'error' => $e->getMessage()
-            ], 500); // 500 Internal Server Error
-        }
-    }
-
-    /**
-     * Update the specified offence record in storage.
-     *
-     * Handles updating the main offence record within a database transaction.
-     * The 'updated_by' field is assumed to be the ID of the authenticated staff member.
-     *
-     * @param  \Illuminate\Http\Request  $request The incoming request.
-     * @param  int  $id The ID of the offence record to update.
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(Request $request, $id)
-    {
-        $offence = HRMSOffence::findOrFail($id);
-
-        // Define validation rules for the update operation
-        $validator = Validator::make($request->all(), [
-            'branch_id' => 'sometimes|required|integer|exists:branch,id',
-            'hrms_staff_id' => 'sometimes|required|integer|exists:hrms_staff,id',
-            'issue_date' => 'sometimes|required|date',
-            'hrms_offence_type_id' => 'sometimes|required|integer|exists:hrms_offence_type,id',
-            'description' => 'sometimes|required|string',
-            'action_taken' => 'nullable|string', // Action taken can be updated and can be null
-            // 'updated_by' is typically set by the system (authenticated user)
+            'hrms_offence_action_taken_id' => 'nullable|integer|exists:hrms_offence_action_taken,id',
         ]);
 
         if ($validator->fails()) {
@@ -167,28 +86,86 @@ class HRMSOffenceController extends Controller
         try {
             DB::beginTransaction();
 
-            // Assuming you have an authenticated user and can get their staff ID
             $authenticatedStaffId = 1; // TODO: Replace with actual authenticated staff ID
 
-            // Prepare data for update
+            $offence = HRMSOffence::create([
+                'branch_id' => $request->branch_id,
+                'hrms_staff_id' => $request->hrms_staff_id,
+                'issue_date' => $request->issue_date,
+                'hrms_offence_type_id' => $request->hrms_offence_type_id,
+                'description' => $request->description,
+                'hrms_offence_action_taken_id' => $request->hrms_offence_action_taken_id,
+                'created_by' => $authenticatedStaffId,
+                'updated_by' => $authenticatedStaffId,
+            ]);
+
+            DB::commit();
+
+            $offence->load(['branch', 'staff', 'offenceType', 'actionTaken', 'creator', 'updater']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Offence record created successfully!',
+                'data' => $offence
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create offence record.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update the specified offence record in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request The incoming request.
+     * @param  int  $id The ID of the offence record to update.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, $id)
+    {
+        $offence = HRMSOffence::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'branch_id' => 'sometimes|required|integer|exists:branch,id',
+            'hrms_staff_id' => 'sometimes|required|integer|exists:hrms_staff,id',
+            'issue_date' => 'sometimes|required|date',
+            'hrms_offence_type_id' => 'sometimes|required|integer|exists:hrms_offence_type,id',
+            'description' => 'sometimes|required|string',
+            'hrms_offence_action_taken_id' => 'sometimes|nullable|integer|exists:hrms_offence_action_taken,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $authenticatedStaffId = 1; // TODO: Replace with actual authenticated staff ID
+
             $updateData = $request->only([
                 'branch_id',
                 'hrms_staff_id',
                 'issue_date',
                 'hrms_offence_type_id',
                 'description',
-                'action_taken',
+                'hrms_offence_action_taken_id',
             ]);
 
-            // Set the updater
             $updateData['updated_by'] = $authenticatedStaffId;
 
             $offence->update($updateData);
 
             DB::commit();
 
-            // Reload the offence with relationships for the response
-            $offence->load(['branch', 'staff', 'offenceType', 'creator', 'updater']);
+            $offence->load(['branch', 'staff', 'offenceType', 'actionTaken', 'creator', 'updater']);
 
             return response()->json([
                 'success' => true,
@@ -208,8 +185,6 @@ class HRMSOffenceController extends Controller
     /**
      * Remove the specified offence record from storage.
      *
-     * This method performs a soft delete on the offence record.
-     *
      * @param  int  $id The ID of the offence record to delete.
      * @return \Illuminate\Http\JsonResponse
      */
@@ -218,7 +193,6 @@ class HRMSOffenceController extends Controller
         $offence = HRMSOffence::findOrFail($id);
 
         try {
-            // Since HRMSOffence uses SoftDeletes, this will only mark it as deleted.
             $offence->delete();
 
             return response()->json([
