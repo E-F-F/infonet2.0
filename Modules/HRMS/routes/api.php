@@ -30,7 +30,9 @@ use Modules\HRMS\Http\Controllers\DepartmentController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
+    
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/test', [HRMSController::class, 'index']);
         Route::get('/staff', [HRMSStaffController::class, 'index']);
         Route::get('/staff/{id}', [HRMSStaffController::class, 'index']);
         Route::post('/staff/create', [HRMSStaffController::class, 'createStaff']);

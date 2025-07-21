@@ -39,6 +39,7 @@ class HRMSStaffEmployment extends Model
         'hrms_leave_rank_id',
         'hrms_pay_group_id',
         'hrms_appraisal_type_id',
+        'hrms_roster_group_id',
         'employee_number',
         'joining_date',
         'confirmation_date',
@@ -70,6 +71,16 @@ class HRMSStaffEmployment extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    /**
+     * Get the roster group that the staff employment record belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function rosterGroup(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterGroup::class, 'hrms_roster_group_id');
     }
 
     /**

@@ -11,6 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('hrms_attendance_station', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('code')->nullable();
+            $table->foreignId('branch_id')->constrained('branch')->onDelete('cascade');
+            $table->string('serial_number')->nullable();
+            $table->string('hashed_password')->nullable();
+            $table->boolean('is_active')->default(true)->nullable(false);
+            $table->string('sensor_id')->nullable();
+            $table->boolean('auto_inout')->default(true)->nullable(false);
+            $table->timestamps();
+        });
+
         Schema::create('hrms_attendance', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hrms_staff_id')->constrained('hrms_staff')->onDelete('cascade');

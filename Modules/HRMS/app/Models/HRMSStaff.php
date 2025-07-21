@@ -149,6 +149,17 @@ class HRMSStaff extends Model
     }
 
     /**
+     * Get the staff's roster group id from their employment details.
+     * This is an accessor that allows you to call $staff->roster_group.
+     *
+     * @return string|null
+     */
+    public function getRosterGroupAttribute(): ?int
+    {
+        return $this->employment ? $this->employment->hrms_roster_group_id : null;
+    }
+
+    /**
      * Get a string representation of the staff (e.g., for debugging).
      *
      * @return string
