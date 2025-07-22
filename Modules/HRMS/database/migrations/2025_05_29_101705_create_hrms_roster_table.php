@@ -32,8 +32,8 @@ return new class extends Migration {
         Schema::create('hrms_roster_shift', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->time('time_in');
-            $table->time('time_out');
+            $table->time('time_in')->nullable();
+            $table->time('time_out')->nullable();
             $table->time('break_time_in')->nullable();
             $table->time('break_time_out')->nullable();
             $table->boolean('has_lunch_break')->default(false);
@@ -75,17 +75,13 @@ return new class extends Migration {
             $table->integer('year')->unique();
             $table->foreignId('roster_group_id')->nullable()->constrained('hrms_roster_group')->onDelete('cascade');
 
-            $table->foreignId('default_roster_shift_workday')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-            $table->foreignId('default_roster_shift_public_holiday')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-            $table->foreignId('default_roster_shift_offday')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-            $table->foreignId('default_roster_shift_company_halfoffday')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
+            $table->foreignId('default_roster_shift')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
+            $table->foreignId('public_holiday_shift')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
+            $table->foreignId('company_half_off_day_shift')->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
 
             // Manual day-wise shift pattern
             foreach (['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as $day) {
-                $table->foreignId("{$day}_shift_workday")->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-                $table->foreignId("{$day}_shift_public_holiday")->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-                $table->foreignId("{$day}_shift_offday")->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
-                $table->foreignId("{$day}_shift_company_halfoffday")->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
+                $table->foreignId("{$day}_shift")->nullable()->constrained('hrms_roster_shift')->onDelete('cascade');
             }
 
             $table->date('effective_date');

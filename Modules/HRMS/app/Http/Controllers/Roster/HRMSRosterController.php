@@ -305,44 +305,40 @@ class HRMSRosterController extends Controller
                 'year' => 'required|integer',
                 'branch_id' => 'required|exists:branch,id',
                 'roster_group_id' => 'required|exists:hrms_roster_group,id',
-                'default_roster_shift_workday' => 'required|exists:hrms_roster_shift,id',
-                'default_roster_shift_public_holiday' => 'required|exists:hrms_roster_shift,id',
-                'default_roster_shift_offday' => 'required|exists:hrms_roster_shift,id',
-                'default_roster_shift_company_halfoffday' => 'required|exists:hrms_roster_shift,id',
+                'default_roster_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'sunday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'public_holiday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'company_half_off_day_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'monday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'tuesday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'wednesday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'thursday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'friday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'saturday_shift' => 'nullable|exists:hrms_roster_shift,id',
                 'effective_date' => 'required|date',
-                'status' => 'required|in:active,disabled'
+                'status' => 'required|in:active,disabled',
             ]);
 
             $year = $request->year;
             $branchId = $request->branch_id;
-            $rosterGroupId = $request->roster_group_id;
 
-            // Check if roster already exists for the year
-            $roster = HRMSRoster::where('year', $year)->where('branch_id', $branchId)->first();
-            if ($roster) {
+            // Check if roster exists
+            if (HRMSRoster::where('year', $year)->where('branch_id', $branchId)->exists()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Roster for this year and branch already exists.'
                 ], 422);
             }
 
-            // Create the roster
-            $roster = HRMSRoster::create([
-                'branch_id' => $branchId,
-                'year' => $year,
-                'roster_group_id' => $rosterGroupId,
-                'default_roster_shift_workday' => $request->default_roster_shift_workday,
-                'default_roster_shift_public_holiday' => $request->default_roster_shift_public_holiday,
-                'default_roster_shift_offday' => $request->default_roster_shift_offday,
-                'default_roster_shift_company_halfoffday' => $request->default_roster_shift_company_halfoffday,
-                'sunday_shift_workday' => $request->default_roster_shift_offday, // Example: Sundays off
-                'sunday_shift_offday' => $request->default_roster_shift_offday,
-                'effective_date' => $request->effective_date,
-                'status' => $request->status
-            ]);
+            // Create roster
+            $roster = HRMSRoster::create($validatedData);
 
-            // Get all holidays and off days for the year
-            $holidays = HRMSHoliday::whereYear('holiday_date', $year)->where('status', 'active')->get()->pluck('holiday_date')->toArray();
+            // Get holidays and off days
+            $holidays = HRMSHoliday::whereYear('holiday_date', $year)
+                ->where('status', 'active')
+                ->pluck('holiday_date')
+                ->toArray();
+
             $offdays = HRMSOffday::where('status', 'active')
                 ->whereYear('holiday_date', $year)
                 ->orWhere(function ($query) use ($year) {
@@ -364,30 +360,40 @@ class HRMSRosterController extends Controller
             foreach ($period as $date) {
                 $dayOfWeek = strtolower($date->format('l'));
                 $dayType = 'workday';
-                $shiftId = $roster->default_roster_shift_workday;
+                $shiftId = $roster->default_roster_shift;
 
-                // Check if it's a holiday
+                // Check for holiday
                 if (in_array($date->toDateString(), $holidays)) {
                     $dayType = 'public_holiday';
-                    $shiftId = $roster->default_roster_shift_public_holiday;
+                    $shiftId = $roster->public_holiday_shift;
                 } else {
-                    // Check if it's an off day
+                    // Check for off day
                     foreach ($offdays as $offday) {
                         if ($this->isOffdayMatch($offday, $date)) {
                             $dayType = 'offday';
-                            $shiftId = $roster->default_roster_shift_offday;
+                            $shiftId = $roster->company_half_off_day_shift;
                             break;
                         }
                     }
 
-                    // Check day-specific shift (e.g., Sunday)
-                    $daySpecificShift = $roster->{$dayOfWeek . '_shift_' . $dayType};
+                    // Apply day-specific shift
+                    $daySpecificShift = $roster->{$dayOfWeek . '_shift'};
                     if ($daySpecificShift) {
                         $shiftId = $daySpecificShift;
                     }
                 }
 
-                // Create assignment for the roster group (not staff-specific)
+                if ($shiftId) {
+                    $shift = HRMSRosterShift::find($shiftId);
+                    if (!$shift || is_null($shift->time_in) || is_null($shift->time_out)) {
+                        $dayType = 'offday';
+                    } elseif (is_null($shift->break_time_in) || is_null($shift->break_time_out)) {
+                        $dayType = 'company_halfoffday';
+                    }
+                } else {
+                    $dayType = 'offday'; // No shift assigned, treat as off day
+                }
+
                 $assignments[] = [
                     'roster_id' => $roster->id,
                     'roster_date' => $date->toDateString(),
@@ -395,39 +401,42 @@ class HRMSRosterController extends Controller
                     'shift_id' => $shiftId,
                     'is_override' => false,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
 
-            // Batch insert assignments
-            HRMSRosterDayAssignments::insert($assignments);
+            // Batch insert assignments in chunks
+            $chunkSize = 100;
+            foreach (array_chunk($assignments, $chunkSize) as $chunk) {
+                HRMSRosterDayAssignments::insert($chunk);
+            }
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Roster and daily assignments generated successfully for ' . $year,
+                'message' => "Roster and assignments generated for $year",
                 'data' => [
                     'roster' => $roster,
-                    'assignment_count' => count($assignments)
-                ]
+                    'assignment_count' => count($assignments),
+                ],
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validation failed.',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Error generating roster for year: ' . $e->getMessage());
+            Log::error('Roster generation error: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'An error occurred while generating the roster.',
-                'error' => $e->getMessage()
+                'message' => 'Failed to generate roster.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Check if an off day matches the given date based on its recurrence.
+     * Check if an off day matches the given date based on recurrence.
      *
      * @param HRMSOffday $offday
      * @param Carbon $date
@@ -438,8 +447,13 @@ class HRMSRosterController extends Controller
         $effectiveDate = Carbon::parse($offday->effective_date);
         $endDate = $offday->recurring_end_date ? Carbon::parse($offday->recurring_end_date) : null;
 
-        // Check if date is within effective range
+        // Validate date range
         if ($date->lt($effectiveDate) || ($endDate && $date->gt($endDate))) {
+            return false;
+        }
+
+        // Validate holiday_date
+        if (!$offday->holiday_date) {
             return false;
         }
 
@@ -451,7 +465,7 @@ class HRMSRosterController extends Controller
             'weekly' => '1 week',
             'monthly' => '1 month',
             'quarterly' => '3 months',
-            'annually' => '1 year'
+            'annually' => '1 year',
         ];
 
         $interval = $intervalMap[$offday->recurring_interval] ?? null;
@@ -459,7 +473,8 @@ class HRMSRosterController extends Controller
             return false;
         }
 
-        $period = CarbonPeriod::create($effectiveDate, $interval, $endDate ?: $date);
+        $start = Carbon::parse($offday->holiday_date);
+        $period = CarbonPeriod::create($start, $interval, $endDate ?: $date);
         foreach ($period as $periodDate) {
             if ($periodDate->toDateString() === $date->toDateString()) {
                 return true;

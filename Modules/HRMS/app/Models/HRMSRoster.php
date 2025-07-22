@@ -16,43 +16,77 @@ class HRMSRoster extends Model
         'branch_id',
         'year',
         'roster_group_id',
-        'default_roster_shift_workday',
-        'default_roster_shift_public_holiday',
-        'default_roster_shift_offday',
-        'default_roster_shift_company_halfoffday',
-        'sunday_shift_workday',
-        'sunday_shift_public_holiday',
-        'sunday_shift_offday',
-        'sunday_shift_company_halfoffday',
-        'monday_shift_workday',
-        'monday_shift_public_holiday',
-        'monday_shift_offday',
-        'monday_shift_company_halfoffday',
-        'tuesday_shift_workday',
-        'tuesday_shift_public_holiday',
-        'tuesday_shift_offday',
-        'tuesday_shift_company_halfoffday',
-        'wednesday_shift_workday',
-        'wednesday_shift_public_holiday',
-        'wednesday_shift_offday',
-        'wednesday_shift_company_halfoffday',
-        'thursday_shift_workday',
-        'thursday_shift_public_holiday',
-        'thursday_shift_offday',
-        'thursday_shift_company_halfoffday',
-        'friday_shift_workday',
-        'friday_shift_public_holiday',
-        'friday_shift_offday',
-        'friday_shift_company_halfoffday',
-        'saturday_shift_workday',
-        'saturday_shift_public_holiday',
-        'saturday_shift_offday',
-        'saturday_shift_company_halfoffday',
+
+        'default_roster_shift',
+        'sunday_shift',
+        'public_holiday_shift',
+        'company_half_off_day_shift',
+
+        'sunday_shift',
+        'monday_shift',
+        'tuesday_shift',
+        'wednesday_shift',
+        'thursday_shift',
+        'friday_shift',
+        'saturday_shift',
+
         'effective_date',
+        'status',
     ];
 
     public function branch(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Branch::class, 'branch_id');
+    }
+
+    public function rosterGroup(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterGroup::class, 'roster_group_id');
+    }
+
+    public function defaultShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'default_roster_shift');
+    }
+
+    public function sundayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'sunday_shift');
+    }
+
+    public function publicHolidayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'public_holiday_shift');
+    }
+
+    public function companyHalfOffDayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'company_half_off_day_shift');
+    }
+
+    // Optional: Relationships for each weekday shift
+    public function mondayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'monday_shift');
+    }
+    public function tuesdayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'tuesday_shift');
+    }
+    public function wednesdayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'wednesday_shift');
+    }
+    public function thursdayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'thursday_shift');
+    }
+    public function fridayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'friday_shift');
+    }
+    public function saturdayShift(): BelongsTo
+    {
+        return $this->belongsTo(HRMSRosterShift::class, 'saturday_shift');
     }
 }

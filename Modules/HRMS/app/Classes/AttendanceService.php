@@ -23,34 +23,35 @@ class AttendanceService
     public function test()
     {
         $clockInTime = Carbon::now();
+
+        if (!$this->rosterGroupId) {
+            return [
+                'message' => 'Not assigned to any roster'
+            ];
+        }
+
         $roster = HRMSRoster::where('roster_group_id', $this->rosterGroupId)->first();
         $assignment = HRMSRosterDayAssignments::where('roster_id', $roster->id)
             ->where('roster_date', $clockInTime->toDateString())
             ->with('shift')
             ->first();
 
-        if ($assignment->day_type === 'workday') {
-            // Parses the scheduled shift start time into a Carbon object (e.g. "08:00:00").
-            $shiftStartTime = Carbon::parse($assignment->shift->time_in); // Assumes HRMSRosterShift has start_time
-            // Compares the current clock-in time to the scheduled shift time.
-            $status = $clockInTime->lte($shiftStartTime) ? 'on time' : 'late';
-            return [
-                'status' => $status,
-                'message' => 'Today is workday',
-                'assignment' => $assignment
-
-            ];
-        }
         if ($assignment->day_type === 'offday') {
             return [
                 'message' => 'Today is offday'
             ];
         }
-        // return [
-        //     'staffId' => $this->staffId,
-        //     'rosterGroupId'  => $this->rosterGroupId,
-        //     'roster' => $assignment
-        // ];
+
+        // Parses the scheduled shift start time into a Carbon object (e.g. "08:00:00").
+        $shiftStartTime = Carbon::parse($assignment->shift->time_in); // Assumes HRMSRosterShift has start_time
+        // Compares the current clock-in time to the scheduled shift time.
+        $status = $clockInTime->lte($shiftStartTime) ? 'on time' : 'late';
+
+        return [
+            'status' => $status,
+            'message' => 'Today is workday',
+            'assignment' => $assignment
+        ];
     }
 
     /**

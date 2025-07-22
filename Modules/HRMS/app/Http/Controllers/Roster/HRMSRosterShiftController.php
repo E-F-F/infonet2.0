@@ -70,8 +70,8 @@ class HRMSRosterShiftController extends Controller
         try {
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255|unique:hrms_roster_shift,name',
-                'time_in' => 'required|date_format:H:i:s',
-                'time_out' => 'required|date_format:H:i:s|after:time_in',
+                'time_in' => 'nullable|date_format:H:i:s',
+                'time_out' => 'nullable|date_format:H:i:s|after:time_in',
                 'break_time_in' => 'nullable|date_format:H:i:s',
                 'break_time_out' => 'nullable|date_format:H:i:s|after:break_time_in',
                 'has_lunch_break' => 'boolean',
