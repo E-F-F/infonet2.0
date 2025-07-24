@@ -383,16 +383,25 @@ class HRMSRosterController extends Controller
                     }
                 }
 
-                if ($shiftId) {
+                if ($shiftId && $dayType !== 'public_holiday') {
                     $shift = HRMSRosterShift::find($shiftId);
                     if (!$shift || is_null($shift->time_in) || is_null($shift->time_out)) {
                         $dayType = 'offday';
                     } elseif (is_null($shift->break_time_in) || is_null($shift->break_time_out)) {
-                        $dayType = 'company_halfoffday';
+                        $dayType = 'halfday';
                     }
-                } else {
-                    $dayType = 'offday'; // No shift assigned, treat as off day
                 }
+
+                // if ($shiftId) {
+                //     $shift = HRMSRosterShift::find($shiftId);
+                //     if (!$shift || is_null($shift->time_in) || is_null($shift->time_out)) {
+                //         $dayType = 'offday';
+                //     } elseif (is_null($shift->break_time_in) || is_null($shift->break_time_out)) {
+                //         $dayType = 'halfday';
+                //     }
+                // } else {
+                //     $dayType = 'offday'; // No shift assigned, treat as off day
+                // }
 
                 $assignments[] = [
                     'roster_id' => $roster->id,

@@ -20,94 +20,92 @@ class AttendanceService
         $this->rosterGroupId = HRMSStaff::find($this->staffId)->roster_group;
     }
 
-    public function test()
+    /**
+     * Process user clock-in/out and validate against roster.
+     *
+     * @param Carbon $clockTime
+     * @param string $action
+     * @return array
+     */
+    public function processClockIn(Carbon $clockTime, string $action): array
     {
-        $clockInTime = Carbon::now();
-
         if (!$this->rosterGroupId) {
-            return [
-                'message' => 'Not assigned to any roster'
-            ];
+            return ['message' => 'Not assigned to any roster'];
         }
 
         $roster = HRMSRoster::where('roster_group_id', $this->rosterGroupId)->first();
+        if (!$roster) {
+            return ['message' => 'No roster found'];
+        }
+
         $assignment = HRMSRosterDayAssignments::where('roster_id', $roster->id)
-            ->where('roster_date', $clockInTime->toDateString())
+            ->where('roster_date', $clockTime->toDateString())
             ->with('shift')
             ->first();
 
-        if ($assignment->day_type === 'offday') {
-            return [
-                'message' => 'Today is offday'
-            ];
+        if (!$assignment || !$assignment->shift) {
+            return ['message' => 'No shift assigned for today'];
         }
 
-        // Parses the scheduled shift start time into a Carbon object (e.g. "08:00:00").
-        $shiftStartTime = Carbon::parse($assignment->shift->time_in); // Assumes HRMSRosterShift has start_time
-        // Compares the current clock-in time to the scheduled shift time.
-        $status = $clockInTime->lte($shiftStartTime) ? 'on time' : 'late';
+        $shiftTimeIn = Carbon::parse($assignment->shift->time_in);
+        $shiftTimeOut = Carbon::parse($assignment->shift->time_out);
+        $shiftBreakTimeIn = Carbon::parse($assignment->shift->break_time_in);
+        $shiftBreakTimeOut = Carbon::parse($assignment->shift->break_time_out);
 
-        return [
-            'status' => $status,
-            'message' => 'Today is workday',
-            'assignment' => $assignment
-        ];
-    }
+        if ($assignment->day_type === 'workday') {
+            if ($action === 'clockin') {
+                if ($clockTime->lte($shiftBreakTimeIn)) {
+                    $status = $clockTime->lte($shiftTimeIn) ? 'on time' : 'late';
+                    return [
+                        'status' => $status,
+                        'message' => 'Clock-in recorded successfully',
+                    ];
+                }
+                if ($clockTime->between($shiftBreakTimeIn, $shiftBreakTimeOut)) {
+                    $status = $clockTime->lte($shiftBreakTimeIn) ? 'on time' : 'late';
+                    return [
+                        'status' => $status,
+                        'message' => 'Break clock-in recorded successfully',
+                    ];
+                }
+            }
 
-    /**
-     * Process user clock-in and validate against roster.
-     *
-     * @param int $staffId
-     * @param Carbon $clockInTime
-     * @return array
-     */
-    public function processClockIn(int $staffId, Carbon $clockInTime): array
-    {
-        // Get roster day assignment for staff and date
-        $assignment = HRMSRosterDayAssignments::where('hrms_staff_id', $staffId)
-            ->where('roster_date', $clockInTime->toDateString())
-            ->with('shift', 'roster')
-            ->first();
-
-        // Reject if no assignment exists
-        if (!$assignment) {
-            $shiftStartTime = Carbon::parse($assignment->shift->start_time); // Assumes HRMSRosterShift has start_time
-            $status = $clockInTime->lte($shiftStartTime) ? 'on time' : 'late';
-            return [
-                'status' => $status,
-                'message' => 'No roster assignment for staff on this date.'
-
-            ];
+            if ($action === 'clockout') {
+                if ($clockTime->between($shiftBreakTimeIn, $shiftBreakTimeOut)) {
+                    $status = $clockTime->gte($shiftBreakTimeOut) ? 'on time' : 'early';
+                    return [
+                        'status' => $status,
+                        'message' => 'Break clock-out recorded successfully',
+                    ];
+                }
+                if ($clockTime->gte($shiftBreakTimeIn)) {
+                    $status = $clockTime->gte($shiftTimeOut) ? 'on time' : 'early';
+                    return [
+                        'status' => $status,
+                        'message' => 'Clock-out recorded successfully',
+                    ];
+                }
+            }
         }
 
-        // Check if it's an offday
-        if ($assignment->day_type === 'offday') {
-            // Reject if no specific work assignment for staff
-            if (!$assignment->is_override || $assignment->hrms_staff_id !== $staffId) {
+        if ($assignment->day_type === 'halfday') {
+            if ($action === 'clockin') {
+                $status = $clockTime->lte($shiftTimeIn) ? 'on time' : 'late';
                 return [
-                    'status' => 'rejected',
-                    'message' => 'Offday with no specific work assignment for staff.'
+                    'status' => $status,
+                    'message' => 'Clock-in recorded successfully',
+                ];
+            }
+
+            if ($action === 'clockout') {
+                $status = $clockTime->gte($shiftTimeOut) ? 'on time' : 'early';
+                return [
+                    'status' => $status,
+                    'message' => 'Clock-out recorded successfully',
                 ];
             }
         }
 
-        // For workday or override, check shift start time
-        $shiftStartTime = Carbon::parse($assignment->shift->start_time); // Assumes HRMSRosterShift has start_time
-        $status = $clockInTime->lte($shiftStartTime) ? 'on time' : 'late';
-
-        // Record attendance
-        $attendance = HRMSAttendance::create([
-            'hrms_staff_id' => $staffId,
-            'attendance_date' => $clockInTime->toDateString(),
-            'morning_clockIn' => $clockInTime,
-            'morning_status' => $status,
-            'remark' => $status === 'on time' ? 'On time' : 'Late clock-in'
-        ]);
-
-        return [
-            'status' => 'success',
-            'message' => 'Attendance recorded.',
-            'attendance_id' => $attendance->id
-        ];
+        return ['message' => 'Invalid action or day type'];
     }
 }
