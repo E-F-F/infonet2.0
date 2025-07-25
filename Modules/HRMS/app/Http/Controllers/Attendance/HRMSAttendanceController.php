@@ -4,6 +4,9 @@ namespace Modules\HRMS\Http\Controllers\Attendance;
 
 use App\Http\Controllers\Controller;
 use Modules\HRMS\Models\HRMSAttendance;
+use Illuminate\Http\Request;
+use Modules\HRMS\Classes\AttendanceService;
+use Illuminate\Support\Carbon;
 
 /**
  * HRMSAttendanceController
@@ -34,5 +37,20 @@ class HRMSAttendanceController extends Controller
     {
         $attendance = HRMSAttendance::with('staff')->findOrFail($id);
         return response()->json($attendance);
+    }
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'clock_time' => 'required|date_format:H:i:s',
+            'action' => 'required|in:clockin,clockout',
+        ]);
+
+        $clockTime = Carbon::parse($validated['clock_time']);
+        $action = $validated['action'];
+
+        $attendanceService = new AttendanceService();
+        $result = $attendanceService->processClockIn($clockTime, $action);
+
+        return response()->json($result);
     }
 }

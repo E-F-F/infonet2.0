@@ -39,7 +39,7 @@ class AttendanceService
         }
 
         $assignment = HRMSRosterDayAssignments::where('roster_id', $roster->id)
-            ->where('roster_date', $clockTime->toDateString())
+            ->where('roster_date', Carbon::today()->toDateString())
             ->with('shift')
             ->first();
 
@@ -47,24 +47,44 @@ class AttendanceService
             return ['message' => 'No shift assigned for today'];
         }
 
+        $attendance = HRMSAttendance::firstOrNew([
+            'hrms_staff_id' => $this->staffId,
+            'attendance_date' => Carbon::today()->toDateString(),
+        ]);
+
         $shiftTimeIn = Carbon::parse($assignment->shift->time_in);
         $shiftTimeOut = Carbon::parse($assignment->shift->time_out);
-        $shiftBreakTimeIn = Carbon::parse($assignment->shift->break_time_in);
-        $shiftBreakTimeOut = Carbon::parse($assignment->shift->break_time_out);
+        $shiftBreakTimeIn = Carbon::parse($assignment->shift->break_time_in); //time in to go back to work
+        $shiftBreakTimeOut = Carbon::parse($assignment->shift->break_time_out); //time out to go to break
+        $shift_total_minutes = $shiftTimeOut->diffInMinutes($shiftTimeIn);
+
+        // Only subtract break if both times are set
+        if (!is_null($assignment->shift->break_time_in) && !is_null($assignment->shift->break_time_out)) {
+            $break_minutes = Carbon::parse($assignment->shift->break_time_in)
+                ->diffInMinutes(Carbon::parse($assignment->shift->break_time_out));
+
+            $shift_total_minutes -= $break_minutes;
+        }
+
+        $shift_total_hours = $shift_total_minutes / 60;
+
+
+        $response = ['message' => 'Invalid action or day type'];
 
         if ($assignment->day_type === 'workday') {
             if ($action === 'clockin') {
                 if ($clockTime->lte($shiftBreakTimeIn)) {
-                    $status = $clockTime->lte($shiftTimeIn) ? 'on time' : 'late';
-                    return [
-                        'status' => $status,
+                    $attendance->morning_clockIn = $clockTime;
+                    $attendance->morning_status = $clockTime->lte($shiftTimeIn) ? 'present' : 'late';
+                    $response = [
+                        'status' => $attendance->morning_status,
                         'message' => 'Clock-in recorded successfully',
                     ];
-                }
-                if ($clockTime->between($shiftBreakTimeIn, $shiftBreakTimeOut)) {
-                    $status = $clockTime->lte($shiftBreakTimeIn) ? 'on time' : 'late';
-                    return [
-                        'status' => $status,
+                } elseif ($clockTime->between($shiftBreakTimeIn, $shiftBreakTimeOut)) {
+                    $attendance->afternoon_clockIn = $clockTime;
+                    $attendance->afternoon_status = 'present'; // You may refine this
+                    $response = [
+                        'status' => 'present',
                         'message' => 'Break clock-in recorded successfully',
                     ];
                 }
@@ -72,40 +92,62 @@ class AttendanceService
 
             if ($action === 'clockout') {
                 if ($clockTime->between($shiftBreakTimeIn, $shiftBreakTimeOut)) {
-                    $status = $clockTime->gte($shiftBreakTimeOut) ? 'on time' : 'early';
-                    return [
-                        'status' => $status,
+                    $attendance->morning_clockOut = $clockTime;
+                    $response = [
+                        'status' => 'on break',
                         'message' => 'Break clock-out recorded successfully',
                     ];
-                }
-                if ($clockTime->gte($shiftBreakTimeIn)) {
-                    $status = $clockTime->gte($shiftTimeOut) ? 'on time' : 'early';
-                    return [
-                        'status' => $status,
+                } elseif ($clockTime->gte($shiftBreakTimeIn)) {
+                    $attendance->afternoon_clockOut = $clockTime;
+                    $response = [
+                        'status' => $clockTime->gte($shiftTimeOut) ? 'present' : 'early',
                         'message' => 'Clock-out recorded successfully',
                     ];
                 }
             }
+
+            // Calculate working hours if both clock-ins/outs are present
+            if ($attendance->morning_clockIn && $attendance->morning_clockOut) {
+                $morning_working_hours = Carbon::parse($attendance->morning_clockOut)
+                    ->diffInMinutes(Carbon::parse($attendance->morning_clockIn)) / 60;
+            }
+
+            if ($attendance->afternoon_clockIn && $attendance->afternoon_clockOut) {
+                $afternoon_working_hours = Carbon::parse($attendance->afternoon_clockOut)
+                    ->diffInMinutes(Carbon::parse($attendance->afternoon_clockIn)) / 60;
+            }
+            $attendance->total_working_hours = $shift_total_hours - ($afternoon_working_hours + $morning_working_hours);
         }
 
         if ($assignment->day_type === 'halfday') {
             if ($action === 'clockin') {
-                $status = $clockTime->lte($shiftTimeIn) ? 'on time' : 'late';
-                return [
-                    'status' => $status,
+                $attendance->morning_clockIn = $clockTime;
+                $attendance->morning_status = $clockTime->lte($shiftTimeIn) ? 'present' : 'late';
+                $response = [
+                    'status' => $attendance->morning_status,
                     'message' => 'Clock-in recorded successfully',
                 ];
             }
 
             if ($action === 'clockout') {
-                $status = $clockTime->gte($shiftTimeOut) ? 'on time' : 'early';
-                return [
-                    'status' => $status,
+                $attendance->afternoon_clockOut = $clockTime;
+                $response = [
+                    'status' => $clockTime->gte($shiftTimeOut) ? 'present' : 'early',
                     'message' => 'Clock-out recorded successfully',
                 ];
             }
+
+            if ($attendance->morning_clockIn && $attendance->afternoon_clockOut) {
+                $halfday_working_hours = Carbon::parse($attendance->afternoon_clockOut)
+                    ->diffInMinutes(Carbon::parse($attendance->morning_clockIn)) / 60;
+            }
+            $attendance->total_working_hours = $shift_total_hours - $halfday_working_hours;
         }
 
-        return ['message' => 'Invalid action or day type'];
+
+
+        $attendance->save();
+
+        return $response;
     }
 }

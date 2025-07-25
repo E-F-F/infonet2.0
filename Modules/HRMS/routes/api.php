@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\HRMS\Http\Controllers\Attendance\HRMSAttendanceController;
 use Modules\HRMS\Http\Controllers\HRMSController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSStaffController;
 use Modules\HRMS\Http\Controllers\Training\HRMSTrainingAwardTypeController;
@@ -27,10 +28,12 @@ use Modules\HRMS\Http\Controllers\Staff\HRMSDesignationController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSDepartmentController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSResignOptionController;
 use Modules\HRMS\Http\Controllers\DepartmentController;
+use Modules\HRMS\Models\HRMSAttendance;
+use Modules\HRMS\Models\HRMSAttendanceStation;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
-    
+
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/test', [HRMSController::class, 'index']);
         Route::get('/staff', [HRMSStaffController::class, 'index']);
@@ -45,6 +48,13 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('departments', HRMSDepartmentController::class);
 
             Route::apiResource('resign-options', HRMSResignOptionController::class);
+            // Attendance Related API
+            Route::apiResource('attendance', HRMSAttendanceController::class);
+            Route::get('attendance', [HRMSAttendanceController::class, 'index']);
+            Route::post('attendance', [HRMSAttendanceController::class, 'store']);
+            Route::get('attendance/{id}', [HRMSAttendanceController::class, 'show']);
+            // Route::put('training-award-types/{id}', [HRMSAttendance::class, 'update']);
+            // Route::delete('training-award-types/{id}', [HRMSAttendance::class, 'destroy']);
             // Training Related API
             Route::get('training-award-types', [HRMSTrainingAwardTypeController::class, 'index']);
             Route::post('training-award-types', [HRMSTrainingAwardTypeController::class, 'store']);
