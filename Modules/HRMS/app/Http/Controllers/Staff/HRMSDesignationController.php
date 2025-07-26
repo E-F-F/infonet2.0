@@ -23,7 +23,7 @@ class HRMSDesignationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = HRMSDesignation::query();
+        // $query = HRMSDesignation::query();
         $query = HRMSDesignation::with(['department', 'parentDesignation', 'leaveRank']);
 
         if ($search = $request->get('search')) {
@@ -31,7 +31,7 @@ class HRMSDesignationController extends Controller
         }
 
         $designations = $query->get();
-        return view('hrms::designation.index', compact('designations'));
+        // return view('hrms::designation.index', compact('designations'));
 
         return HRMSDesignationResource::collection($designations);
     }

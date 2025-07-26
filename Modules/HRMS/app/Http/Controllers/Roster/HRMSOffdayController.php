@@ -25,7 +25,7 @@ class HRMSOffdayController extends Controller
             'holiday_date' => 'required|date',
             'effective_date' => 'nullable|date',
             'recurring_interval' => ['required', Rule::in(['weekly', 'one time', 'monthly', 'quarterly', 'annually'])],
-            'recurring_end_date' => 'required|date', //|after_or_equal:effective_date',
+            'recurring_end_date' => 'required|date|after_or_equal:effective_date',
             'holiday_type' => ['required', Rule::in(['sundayOffday', 'special'])],
             'status' => ['required', Rule::in(['active', 'disabled'])],
         ]);
