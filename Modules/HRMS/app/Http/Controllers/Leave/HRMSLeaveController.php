@@ -477,52 +477,58 @@ class HRMSLeaveController extends Controller
 
         while ($start->lte($end)) {
             $attendance = HRMSAttendance::firstOrNew([
-                'hrms_staff_id' => $leave->hrms_staff_id,
-                'attendance_date' => $start->toDateString(),
+                'hrms_staff_id'    => $leave->hrms_staff_id,
+                'attendance_date'  => $start->toDateString(),
             ]);
 
-            $morning = null;
-            $afternoon = null;
+            $isSameStart = $start->isSameDay($leave->date_from);
+            $isSameEnd   = $start->isSameDay($leave->date_to);
+
+            $timeInStatus  = null;
+            $timeOutStatus = null;
 
             if ($leave->date_from === $leave->date_to) {
+                // One-day leave
                 if ($leave->session_from === 'AM' && $leave->session_to === 'AM') {
-                    $morning = 'onleave';
+                    $timeInStatus = 'onleave';
                 } elseif ($leave->session_from === 'PM' && $leave->session_to === 'PM') {
-                    $afternoon = 'onleave';
+                    $timeOutStatus = 'onleave';
                 } else {
-                    $morning = 'onleave';
-                    $afternoon = 'onleave';
+                    $timeInStatus = 'onleave';
+                    $timeOutStatus = 'onleave';
                 }
             } else {
-                if ($start->isSameDay($leave->date_from)) {
+                // Multi-day leave
+                if ($isSameStart) {
                     if ($leave->session_from === 'AM') {
-                        $morning = 'onleave';
-                        $afternoon = 'onleave';
+                        $timeInStatus = 'onleave';
+                        $timeOutStatus = 'onleave';
                     } elseif ($leave->session_from === 'PM') {
-                        $afternoon = 'onleave';
+                        $timeOutStatus = 'onleave';
                     }
-                } elseif ($start->isSameDay($leave->date_to)) {
+                } elseif ($isSameEnd) {
                     if ($leave->session_to === 'AM') {
-                        $morning = 'onleave';
+                        $timeInStatus = 'onleave';
                     } elseif ($leave->session_to === 'PM') {
-                        $morning = 'onleave';
-                        $afternoon = 'onleave';
+                        $timeInStatus = 'onleave';
+                        $timeOutStatus = 'onleave';
                     }
                 } else {
-                    $morning = 'onleave';
-                    $afternoon = 'onleave';
+                    $timeInStatus = 'onleave';
+                    $timeOutStatus = 'onleave';
                 }
             }
 
-            $attendance->morning_status = $morning;
-            $attendance->afternoon_status = $afternoon;
+            $attendance->time_in_status     = $timeInStatus;
+            $attendance->time_out_status    = $timeOutStatus;
             $attendance->total_working_hours = 0;
-            $attendance->remark = $leave->leave_purpose;
+            $attendance->remark              = $leave->leave_purpose;
 
             $attendance->save();
             $start->addDay();
         }
     }
+
 
     /**
      * Helper method to clear attendance records for a leave that is no longer approved.
@@ -541,40 +547,74 @@ class HRMSLeaveController extends Controller
                 ->first();
 
             if ($attendance) {
+                $isSameStart = $start->isSameDay($leave->date_from);
+                $isSameEnd   = $start->isSameDay($leave->date_to);
+
                 if ($leave->date_from === $leave->date_to) {
+                    // One-day leave
                     if ($leave->session_from === 'AM' && $leave->session_to === 'AM') {
-                        if ($attendance->morning_status === 'onleave') $attendance->morning_status = null;
+                        if ($attendance->time_in_status === 'onleave') {
+                            $attendance->time_in_status = null;
+                        }
                     } elseif ($leave->session_from === 'PM' && $leave->session_to === 'PM') {
-                        if ($attendance->afternoon_status === 'onleave') $attendance->afternoon_status = null;
+                        if ($attendance->time_out_status === 'onleave') {
+                            $attendance->time_out_status = null;
+                        }
                     } else {
-                        if ($attendance->morning_status === 'onleave') $attendance->morning_status = null;
-                        if ($attendance->afternoon_status === 'onleave') $attendance->afternoon_status = null;
+                        if ($attendance->time_in_status === 'onleave') {
+                            $attendance->time_in_status = null;
+                        }
+                        if ($attendance->time_out_status === 'onleave') {
+                            $attendance->time_out_status = null;
+                        }
                     }
                 } else {
-                    if ($start->isSameDay($leave->date_from)) {
+                    // Multi-day leave
+                    if ($isSameStart) {
                         if ($leave->session_from === 'AM') {
-                            $attendance->morning_status = $attendance->morning_status === 'onleave' ? null : $attendance->morning_status;
-                            $attendance->afternoon_status = $attendance->afternoon_status === 'onleave' ? null : $attendance->afternoon_status;
+                            if ($attendance->time_in_status === 'onleave') {
+                                $attendance->time_in_status = null;
+                            }
+                            if ($attendance->time_out_status === 'onleave') {
+                                $attendance->time_out_status = null;
+                            }
                         } elseif ($leave->session_from === 'PM') {
-                            $attendance->afternoon_status = $attendance->afternoon_status === 'onleave' ? null : $attendance->afternoon_status;
+                            if ($attendance->time_out_status === 'onleave') {
+                                $attendance->time_out_status = null;
+                            }
                         }
-                    } elseif ($start->isSameDay($leave->date_to)) {
+                    } elseif ($isSameEnd) {
                         if ($leave->session_to === 'AM') {
-                            $attendance->morning_status = $attendance->morning_status === 'onleave' ? null : $attendance->morning_status;
+                            if ($attendance->time_in_status === 'onleave') {
+                                $attendance->time_in_status = null;
+                            }
                         } elseif ($leave->session_to === 'PM') {
-                            $attendance->morning_status = $attendance->morning_status === 'onleave' ? null : $attendance->morning_status;
-                            $attendance->afternoon_status = $attendance->afternoon_status === 'onleave' ? null : $attendance->afternoon_status;
+                            if ($attendance->time_in_status === 'onleave') {
+                                $attendance->time_in_status = null;
+                            }
+                            if ($attendance->time_out_status === 'onleave') {
+                                $attendance->time_out_status = null;
+                            }
                         }
                     } else {
-                        $attendance->morning_status = $attendance->morning_status === 'onleave' ? null : $attendance->morning_status;
-                        $attendance->afternoon_status = $attendance->afternoon_status === 'onleave' ? null : $attendance->afternoon_status;
+                        if ($attendance->time_in_status === 'onleave') {
+                            $attendance->time_in_status = null;
+                        }
+                        if ($attendance->time_out_status === 'onleave') {
+                            $attendance->time_out_status = null;
+                        }
                     }
                 }
 
-                if ($attendance->morning_status === null && $attendance->afternoon_status === null) {
+                // If both are cleared, clean up remark and hours
+                if (
+                    $attendance->time_in_status === null &&
+                    $attendance->time_out_status === null
+                ) {
                     $attendance->remark = null;
-                    $attendance->total_working_hours = 0;
+                    $attendance->total_working_hours = null;
                 }
+
                 $attendance->save();
             }
 

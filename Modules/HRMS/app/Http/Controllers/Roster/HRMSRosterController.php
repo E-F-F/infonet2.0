@@ -52,13 +52,32 @@ class HRMSRosterController extends Controller
 
             // Pagination
             $perPage = $request->input('per_page', 10);
-            $rosters = $query->with(['branch', 'rosterGroup', 'defaultRosterShiftWorkday', 'defaultRosterShiftPublicHoliday', 'defaultRosterShiftOffday', 'defaultRosterShiftCompanyHalfoffday'])
+            $rosters = $query->with(['branch', 'rosterGroup'])
                 ->paginate($perPage);
+
+            $formatted = $rosters->getCollection()->map(function ($roster) {
+                return [
+                    'id' => $roster->id,
+                    'year' => $roster->year,
+                    'branch' => $roster->branch?->name, // use null-safe operator
+                    'roster_group' => $roster->rosterGroup?->name,
+                    'status' => $roster->status,
+                    'roster_count    ' => $roster->status,
+                    'default_roster_shift' => $roster->defaultShift?->name,
+                    'sunday_shift' => $roster->sundayShift?->name,
+                    'monday_shift' => $roster->mondayShift?->name,
+                    'tuesday_shift' => $roster->tuesdayShift?->name,
+                    'wednesday_shift' => $roster->wednesdayShift?->name,
+                    'thursday_shift' => $roster->thursdayShift?->name,
+                    'friday_shift' => $roster->fridayShift?->name,
+                    'saturday_shift' => $roster->saturdayShift?->name,
+                ];
+            });
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Rosters retrieved successfully.',
-                'data' => $rosters
+                'data' =>  $formatted
             ]);
         } catch (\Exception $e) {
             Log::error('Error retrieving rosters: ' . $e->getMessage());
@@ -151,8 +170,21 @@ class HRMSRosterController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $roster = HRMSRoster::with(['branch', 'rosterGroup', 'defaultRosterShiftWorkday', 'defaultRosterShiftPublicHoliday', 'defaultRosterShiftOffday', 'defaultRosterShiftCompanyHalfoffday'])
-                ->find($id);
+            $roster = HRMSRoster::with([
+                'branch',
+                'rosterGroup',
+                'rosterDay',
+                'defaultShift',
+                'sundayShift',
+                'mondayShift',
+                'tuesdayShift',
+                'wednesdayShift',
+                'thursdayShift',
+                'fridayShift',
+                'saturdayShift',
+                'companyHalfOffDayShift',
+                'publicHolidayShift'
+            ])->find($id);
 
             if (!$roster) {
                 return response()->json([
@@ -161,13 +193,29 @@ class HRMSRosterController extends Controller
                 ], 404);
             }
 
+            $formatted = [
+                'id' => $roster->id,
+                'year' => $roster->year,
+                'branch' => $roster->branch?->name,
+                'roster_group' => $roster->rosterGroup?->name,
+                'status' => $roster->status,
+                'default_roster_shift' => $roster->defaultShift?->name,
+                'sunday_shift' => $roster->sundayShift?->name,
+                'monday_shift' => $roster->mondayShift?->name,
+                'tuesday_shift' => $roster->tuesdayShift?->name,
+                'wednesday_shift' => $roster->wednesdayShift?->name,
+                'thursday_shift' => $roster->thursdayShift?->name,
+                'friday_shift' => $roster->fridayShift?->name,
+                'saturday_shift' => $roster->saturdayShift?->name,
+                'roster_day' => $roster->rosterDay,
+            ];
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Roster retrieved successfully.',
-                'data' => $roster
+                'data' => $formatted
             ]);
         } catch (\Exception $e) {
-            Log::error('Error retrieving roster: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'An error occurred while retrieving the roster.',
@@ -175,6 +223,7 @@ class HRMSRosterController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Update the specified roster in storage.
@@ -196,43 +245,21 @@ class HRMSRosterController extends Controller
             }
 
             $validatedData = $request->validate([
-                'branch_id' => 'sometimes|nullable|exists:branch,id',
-                'year' => 'sometimes|integer|unique:hrms_roster,year,' . $id,
-                'roster_group_id' => 'sometimes|nullable|exists:hrms_roster_group,id',
-                'default_roster_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'default_roster_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'default_roster_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'default_roster_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'sunday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'sunday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'sunday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'sunday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'monday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'monday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'monday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'monday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'tuesday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'tuesday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'tuesday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'tuesday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'wednesday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'wednesday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'wednesday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'wednesday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'thursday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'thursday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'thursday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'thursday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'friday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'friday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'friday_shift_offday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'friday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'saturday_shift_workday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'saturday_shift_public_holiday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'saturday_shift_offday' => 'nullable|exists:hrms_roster_shift,id',
-                'saturday_shift_company_halfoffday' => 'sometimes|nullable|exists:hrms_roster_shift,id',
-                'effective_date' => 'sometimes|required|date',
-                'status' => 'sometimes|required|in:active,disabled'
+                'year' => 'required|integer',
+                'branch_id' => 'required|exists:branch,id',
+                'roster_group_id' => 'required|exists:hrms_roster_group,id',
+                'default_roster_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'sunday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'public_holiday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'company_half_off_day_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'monday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'tuesday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'wednesday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'thursday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'friday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'saturday_shift' => 'nullable|exists:hrms_roster_shift,id',
+                'effective_date' => 'required|date',
+                'status' => 'required|in:active,disabled',
             ]);
 
             $roster->update($validatedData);

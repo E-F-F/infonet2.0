@@ -24,37 +24,42 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('hrms_attendance', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('hrms_staff_id')->constrained('hrms_staff')->onDelete('cascade');
-            $table->date('attendance_date');
-            $table->time('morning_clockIn')->nullable();
-            $table->time('morning_clockOut')->nullable();
-            $table->enum('morning_status', ['present', 'absent', 'late', 'onleave'])->nullable();
-            $table->time('afternoon_clockIn')->nullable();
-            $table->time('afternoon_clockOut')->nullable();
-            $table->enum('afternoon_status', ['present', 'absent', 'late', 'onleave'])->nullable();
-            $table->double('total_working_hours', 8, 2)->nullable();
-            $table->text('remark')->nullable();
-            $table->unique(['hrms_staff_id', 'attendance_date']);
-            $table->timestamps();
-        });
-
         // Schema::create('hrms_attendance', function (Blueprint $table) {
         //     $table->id();
         //     $table->foreignId('hrms_staff_id')->constrained('hrms_staff')->onDelete('cascade');
         //     $table->date('attendance_date');
-        //     $table->time('time_in')->nullable();
-        //     $table->time('break_time_out')->nullable();
+        //     $table->time('morning_clockIn')->nullable();
+        //     $table->time('morning_clockOut')->nullable();
         //     $table->enum('morning_status', ['present', 'absent', 'late', 'onleave'])->nullable();
-        //     $table->time('break_time_in')->nullable();
-        //     $table->time('time_out')->nullable();
+        //     $table->time('afternoon_clockIn')->nullable();
+        //     $table->time('afternoon_clockOut')->nullable();
         //     $table->enum('afternoon_status', ['present', 'absent', 'late', 'onleave'])->nullable();
         //     $table->double('total_working_hours', 8, 2)->nullable();
         //     $table->text('remark')->nullable();
         //     $table->unique(['hrms_staff_id', 'attendance_date']);
         //     $table->timestamps();
         // });
+
+        Schema::create('hrms_attendance', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('hrms_staff_id')->constrained('hrms_staff')->onDelete('cascade');
+            $table->date('attendance_date');
+            $table->string('day_name')->nullable();
+            $table->time('time_in')->nullable();
+            $table->time('break_time_out')->nullable();
+            $table->time('break_time_in')->nullable();
+            $table->time('time_out')->nullable();
+            $table->float('late_time_in');
+            $table->float('early_time_out');
+            $table->float('overtime_minutes');
+            $table->float('break_time_total');
+            $table->enum('time_in_status', ['ontime', 'late', 'absent', 'onleave'])->nullable();
+            $table->enum('time_out_status', ['ontime', 'early', 'absent', 'onleave'])->nullable();
+            $table->double('total_working_hours', 8, 2)->nullable();
+            $table->text('remark')->nullable();
+            $table->unique(['hrms_staff_id', 'attendance_date']);
+            $table->timestamps();
+        });
 
         Schema::create('hrms_overtime', function (Blueprint $table) {
             $table->id();
@@ -68,7 +73,7 @@ return new class extends Migration
             $table->json('activity_logs')->nullable();
             $table->timestamps();
         });
-        
+
         Schema::create('hrms_appointment', function (Blueprint $table) {
             $table->id();
             $table->string('appointment_subject');

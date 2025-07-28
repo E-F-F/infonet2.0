@@ -141,8 +141,10 @@ Route::middleware('module.access:hrms')->group(function () {
 
             Route::apiResource('roster-shift', HRMSRosterShiftController::class);
 
+
             Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);
             Route::get('roster/staff-shift/{id}', [HRMSRosterController::class, 'getStaffShift']);
+            Route::apiResource('roster', HRMSRosterController::class);
         });
     });
 });
