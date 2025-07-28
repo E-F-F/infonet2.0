@@ -12,13 +12,28 @@ class HRMSAppraisalTypeController extends Controller
     public function index()
     {
         $appraisalTypes = HRMSAppraisalType::all();
-        return view('hrms::payroll_management.appraisal_types.index', compact('appraisalTypes'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $appraisalTypes
+        ]);
     }
 
     public function show($id)
     {
-        $appraisalType = HRMSAppraisalType::findOrFail($id);
-        return response()->json($appraisalType);
+        $appraisalType = HRMSAppraisalType::find($id);
+
+        if (!$appraisalType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Appraisal Type not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $appraisalType
+        ]);
     }
 
     public function store(Request $request)
@@ -29,25 +44,34 @@ class HRMSAppraisalTypeController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Name has been taken',
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ], 422);
         }
 
         $appraisalType = HRMSAppraisalType::create([
             'name' => $request->name,
-            'is_active' => $request->has('is_active'), // Check if checkbox was sent
+            'is_active' => $request->has('is_active'),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Appraisal Type added successfully!',
-            'leaveRank' => $appraisalType
-        ]);
+            'message' => 'Appraisal Type created successfully',
+            'data' => $appraisalType
+        ], 201);
     }
 
     public function update(Request $request, $id)
     {
-        $appraisalType = HRMSAppraisalType::findOrFail($id);
+        $appraisalType = HRMSAppraisalType::find($id);
+
+        if (!$appraisalType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Appraisal Type not found'
+            ], 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|unique:hrms_appraisal_type,name,' . $id,
@@ -55,22 +79,40 @@ class HRMSAppraisalTypeController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Name has been taken',
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
             ], 422);
         }
 
         $appraisalType->update([
             'name' => $request->name,
+            'is_active' => $request->has('is_active'),
         ]);
 
-        return response()->json(['success' => true, 'appraisalType' => $appraisalType]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Appraisal Type updated successfully',
+            'data' => $appraisalType
+        ]);
     }
 
     public function destroy($id)
     {
-        $appraisalType = HRMSAppraisalType::findOrFail($id);
+        $appraisalType = HRMSAppraisalType::find($id);
+
+        if (!$appraisalType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Appraisal Type not found'
+            ], 404);
+        }
+
         $appraisalType->delete();
 
-        return response()->json(['success' => true, 'message' => 'Appraisal Type deleted successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Appraisal Type deleted successfully'
+        ]);
     }
 }

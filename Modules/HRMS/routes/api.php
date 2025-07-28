@@ -27,9 +27,10 @@ use Modules\HRMS\Http\Controllers\Roster\HRMSRosterController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSDesignationController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSDepartmentController;
 use Modules\HRMS\Http\Controllers\Staff\HRMSResignOptionController;
-use Modules\HRMS\Http\Controllers\DepartmentController;
 use Modules\HRMS\Models\HRMSAttendance;
 use Modules\HRMS\Models\HRMSAttendanceStation;
+use Modules\HRMS\Http\Controllers\Staff\HRMSMaritalstatusController;
+use Modules\HRMS\Http\Controllers\Payroll\HRMSAppraisalTypeController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -46,6 +47,8 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('designations', HRMSDesignationController::class);
 
             Route::apiResource('departments', HRMSDepartmentController::class);
+
+            Route::apiResource('marital-status', HRMSMaritalStatusController::class);
 
             Route::apiResource('resign-options', HRMSResignOptionController::class);
             // Attendance Related API
@@ -145,6 +148,8 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);
             Route::get('roster/staff-shift/{id}', [HRMSRosterController::class, 'getStaffShift']);
             Route::apiResource('roster', HRMSRosterController::class);
+
+            Route::apiResource('appraisal-type', HRMSAppraisalTypeController::class);
         });
     });
 });
