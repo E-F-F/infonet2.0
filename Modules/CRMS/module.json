@@ -1,0 +1,11 @@
+{
+    "name": "CRMS",
+    "alias": "crms",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CRMS\\Providers\\CRMSServiceProvider"
+    ],
+    "files": []
+}

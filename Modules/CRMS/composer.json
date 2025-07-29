@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/crms",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CRMS\\": "app/",
+            "Modules\\CRMS\\Database\\Factories\\": "database/factories/",
+            "Modules\\CRMS\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\CRMS\\Tests\\": "tests/"
+        }
+    }
+}
