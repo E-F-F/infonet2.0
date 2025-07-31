@@ -31,15 +31,18 @@ class HRMSEventController extends Controller
     public function index(Request $request)
     {
         $query = $request->input('q');
+        $type = $request->input('type');
+        $from = $request->input('from');
+        $to = $request->input('to');
 
-        $events = HRMSEvent::when($query, function ($q) use ($query) {
-            $q->where('title', 'like', '%' . $query . '%');
-        })
-            ->with('eventType') // Eager load event type
+        $events = HRMSEvent::when($query, fn($q) => $q->where('title', 'like', "%$query%"))
+            ->when($type, fn($q) => $q->where('hrms_event_type_id', $type))
+            ->when($from, fn($q) => $q->whereDate('start_date', '>=', $from))
+            ->when($to, fn($q) => $q->whereDate('end_date', '<=', $to))
+            ->with('eventType')
             ->latest()
-            ->paginate(10); // Paginate results for API
+            ->paginate(10);
 
-        // For API, we typically return the paginated data directly, not separate eventTypes
         return response()->json($events);
     }
 

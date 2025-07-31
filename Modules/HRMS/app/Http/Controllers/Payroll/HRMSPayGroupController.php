@@ -12,7 +12,8 @@ class HRMSPayGroupController extends Controller
     public function index()
     {
         $payGroups = HRMSPayGroup::all();
-        return view('hrms::payroll_management.pay_groups.index', compact('payGroups'));
+        
+        return response()->json($payGroups);
     }
 
     public function show($id)

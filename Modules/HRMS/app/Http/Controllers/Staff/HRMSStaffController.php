@@ -20,7 +20,7 @@ use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-
+use Modules\HRMS\Transformers\simpleStaffListResource;
 
 
 class HRMSStaffController extends Controller
@@ -148,7 +148,7 @@ class HRMSStaffController extends Controller
                     'employment.notice_period' => 'nullable|integer|min:0',
 
                     // SystemAccess linkage
-                    'system_access_id' => 'required|array',
+                    'system_access_id' => 'nullable|array',
                     'system_access_id.*' => 'exists:system_access,id',
 
 
@@ -509,5 +509,12 @@ class HRMSStaffController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function simpleStaffList()
+    {
+        $staffList = HRMSStaff::with(['personal', 'employment']);
+
+        return simpleStaffListResource::collection($staffList->get());
     }
 }

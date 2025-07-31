@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Branch;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use DateTimeInterface;
 
 /**
  * HRMSTraining Model
@@ -87,5 +88,14 @@ class HRMSTraining extends Model
     public function participants(): HasMany
     {
         return $this->hasMany(HRMSTrainingParticipant::class, 'hrms_training_id');
+    }
+    /**
+     * Date.
+     *
+     * @return void
+     */
+    public function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d');
     }
 }

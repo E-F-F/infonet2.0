@@ -31,6 +31,7 @@ use Modules\HRMS\Models\HRMSAttendance;
 use Modules\HRMS\Models\HRMSAttendanceStation;
 use Modules\HRMS\Http\Controllers\Staff\HRMSMaritalstatusController;
 use Modules\HRMS\Http\Controllers\Payroll\HRMSAppraisalTypeController;
+use Modules\HRMS\Http\Controllers\Payroll\HRMSPayGroupController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -38,9 +39,10 @@ Route::middleware('module.access:hrms')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/test', [HRMSController::class, 'index']);
         Route::get('/staff', [HRMSStaffController::class, 'index']);
-        Route::get('/staff/{id}', [HRMSStaffController::class, 'index']);
+        Route::get('/staff/{id}', [HRMSStaffController::class, 'show']);
         Route::post('/staff/create', [HRMSStaffController::class, 'createStaff']);
         Route::post('/staff/update/{id}', [HRMSStaffController::class, 'updateStaff']);
+        Route::get('/staff-list', [HRMSStaffController::class, 'simpleStaffList']);
 
         Route::prefix('hrms')->group(function () {
             // Staff Related Api
@@ -150,6 +152,7 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('roster', HRMSRosterController::class);
 
             Route::apiResource('appraisal-type', HRMSAppraisalTypeController::class);
+            Route::apiResource('pay-groups', HRMSPayGroupController::class);
         });
     });
 });
