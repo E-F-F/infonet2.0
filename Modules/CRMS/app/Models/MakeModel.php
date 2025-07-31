@@ -4,9 +4,9 @@ namespace Modules\CRMS\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\CRMS\Database\Factories\CRMSVehicleInfoFactory;
+// use Modules\CRMS\Database\Factories\MakeModelFactory;
 
-class CRMSVehicleInfo extends Model
+class MakeModel extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,12 @@ class CRMSVehicleInfo extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'crms_people_id'
+        'name',
+        'is_active',
     ];
-    protected $table = 'crms_people_vehicle_info';
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'make_model';
 }

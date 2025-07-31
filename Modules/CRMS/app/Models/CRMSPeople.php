@@ -2,12 +2,19 @@
 
 namespace Modules\CRMS\Models;
 
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\HRMS\Models\HRMSStaff;
 
 class CRMSPeople extends Model
 {
     use HasFactory;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'crms_people';
 
     /**
      * The attributes that are mass assignable.
@@ -23,12 +30,13 @@ class CRMSPeople extends Model
         'id_number',
         'tin',
         'sst_reg_no',
-        'sa',
-        'telephone_o',
-        'telephone_h',
-        'owner_hp_no',
+        'gst_reg_no',
+        'hrms_staff_id',
+        'office_no',
+        'home_no',
+        'phone_no',
         'user_name',
-        'user_hp_no',
+        'user_phone_no',
         'fax_no',
         'email',
         'postal_address',
@@ -45,14 +53,14 @@ class CRMSPeople extends Model
         'city',
         'state',
         'dob',
-        'race',
+        'crms_people_race_id',
         'religion',
-        'monthly_house_income',
+        'crms_people_income_id',
         'marital_status',
         'company_size',
         'sector',
-        'nature_of_business',
-        'occupation',
+        'crms_business_nature_id',
+        'crms_people_occupation_id',
         'grading',
         'is_corporate',
         'lifestyle_interest',
@@ -62,15 +70,74 @@ class CRMSPeople extends Model
         'terms',
         'price_scheme',
         'notes',
+        'log',
     ];
 
     /**
-     * The table associated with the model.
+     * The attributes that should be cast.
      */
-    protected $table = 'crms_people';
+    protected $casts = [
+        'under_company_registration' => 'boolean',
+        'is_corporate' => 'boolean',
+        'dob' => 'date',
+        'last_contact_date' => 'date',
+    ];
+
+    /**
+     * Relationships
+     */
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function corporateGroup()
+    {
+        return $this->belongsTo(CRMSCorporateGroup::class, 'crms_corporate_group_id');
+    }
+
+    public function race()
+    {
+        return $this->belongsTo(CRMSPeopleRace::class, 'crms_people_race_id');
+    }
+
+    public function income()
+    {
+        return $this->belongsTo(CRMSPeopleIncome::class, 'crms_people_income_id');
+    }
+
+    public function businessNature()
+    {
+        return $this->belongsTo(CRMSBusinessNature::class, 'crms_business_nature_id');
+    }
+
+    public function occupation()
+    {
+        return $this->belongsTo(CRMSPeopleOccupation::class, 'crms_people_occupation_id');
+    }
+
+    public function staff()
+    {
+        return $this->belongsTo(HRMSStaff::class, 'hrms_staff_id');
+    }
 
     public function vehicleInfo()
     {
-        return $this->hasMany('Modules\CRMS\Models\CRMSVehicleInfo', 'crms_people_id');
+        return $this->hasMany(CRMSVehicleInfo::class, 'crms_people_id');
+    }
+
+    public function followUps()
+    {
+        return $this->hasMany(CRMSPeopleFollowUp::class, 'crms_people_id');
+    }
+
+    public function marketingInfo()
+    {
+        return $this->hasMany(CRMSPeopleMarketingInfo::class, 'crms_people_id');
+    }
+
+    public function quotations()
+    {
+        return $this->hasMany(CRMSQuotation::class, 'crms_people_id');
     }
 }

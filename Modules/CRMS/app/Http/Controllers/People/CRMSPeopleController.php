@@ -14,14 +14,14 @@ class CRMSPeopleController extends Controller
     public function index(Request $request)
     {
         $peoples = CRMSPeople::query()
-            ->when($request->branch_id, fn($q, $branchId) => $q->where('branch_id', $branchId))
-            ->when($request->name, fn($q, $name) => $q->where('customer_name', 'like', "%$name%"))
-            ->when($request->company, fn($q, $company) => $q->where('company_name', 'like', "%$company%"))
-            ->when($request->ic, fn($q, $ic) => $q->where('id_number', 'like', "%$ic%"))
-            ->when($request->reg_no, fn($q, $regNo) => $q->where('sst_reg_no', 'like', "%$regNo%"))
-            ->when($request->chassis_no, fn($q, $chassisNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('chassis_no', 'like', "%$chassisNo%")))
-            ->when($request->engine_no, fn($q, $engineNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('engine_no', 'like', "%$engineNo%")))
-            ->when($request->stock_no, fn($q, $stockNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('stock_no', 'like', "%$stockNo%")))
+            ->when(!is_null($request->branch_id), fn($q, $branchId) => $q->where('branch_id', $branchId))
+            ->when(!is_null($request->name), fn($q, $name) => $q->where('customer_name', 'like', "%$name%"))
+            ->when(!is_null($request->company), fn($q, $company) => $q->where('company_name', 'like', "%$company%"))
+            ->when(!is_null($request->ic), fn($q, $ic) => $q->where('id_number', 'like', "%$ic%"))
+            ->when(!is_null($request->reg_no), fn($q, $regNo) => $q->where('sst_reg_no', 'like', "%$regNo%"))
+            ->when(!is_null($request->chassis_no), fn($q, $chassisNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('chassis_no', 'like', "%$chassisNo%")))
+            ->when(!is_null($request->engine_no), fn($q, $engineNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('engine_no', 'like', "%$engineNo%")))
+            ->when(!is_null($request->stock_no), fn($q, $stockNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('stock_no', 'like', "%$stockNo%")))
             ->with('vehicleInfo')
             ->get();
         return response()->json($peoples);

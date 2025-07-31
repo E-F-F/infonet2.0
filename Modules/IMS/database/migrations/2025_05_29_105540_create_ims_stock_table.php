@@ -128,17 +128,50 @@ return new class extends Migration
             $table->unique(['ims_stock_batch_id', 'branch_id', 'bin_no']);
         });
 
+        Schema::create('ims_vehicle_make', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('ims_vehicle_model', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('ims_vehicle_make_id')->nullable()->constrained('ims_vehicle_make')->cascadeOnDelete();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('ims_vehicle_colour', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('ims_vehicle_body_type', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+
         Schema::create('ims_stock_vehicles', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('ims_stock_id')->constrained('ims_stock')->cascadeOnDelete(); // e.g., Toyota Vios 1.5
             $table->string('vin')->unique(); // Vehicle Identification Number
-            $table->string('engine_no')->unique()->nullable();
-            $table->string('plate_no')->nullable(); // if already registered
-
-            $table->string('color')->nullable();
-            $table->string('year')->nullable();
+            $table->string('engine_no')->unique();
+            $table->string('chassis_no')->unique();
+            $table->string('year_make')->nullable();
             $table->date('arrival_date')->nullable();
+            $table->string('plate_no')->nullable(); // if already registered
+            $table->string('type')->nullable();
+
+            $table->foreignId('ims_vehicle_make_id')->constrained('ims_vehicle_make')->cascadeOnDelete();
+            $table->foreignId('ims_vehicle_model_id')->constrained('ims_vehicle_model')->cascadeOnDelete();
+            $table->foreignId('ims_vehicle_colour_id')->constrained('ims_vehicle_colour')->cascadeOnDelete();
+            $table->foreignId('ims_vehicle_body_type_id')->constrained('ims_vehicle_body_type')->cascadeOnDelete();
+
+
 
             $table->foreignId('supplier_id')->nullable()->constrained('ims_supplier')->nullOnDelete();
             $table->decimal('purchase_cost', 12, 2)->nullable();
