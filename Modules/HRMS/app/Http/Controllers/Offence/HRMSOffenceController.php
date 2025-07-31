@@ -11,6 +11,7 @@ use Modules\HRMS\Models\HRMSOffenceType;
 use Modules\HRMS\Models\HRMSOffenceActionTaken;
 use Modules\HRMS\Models\HRMSStaff;
 use App\Models\Branch;
+use Modules\HRMS\Transformers\HRMSOffenceResource;
 
 /**
  * HRMSOffenceController
@@ -25,18 +26,42 @@ class HRMSOffenceController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $offences = HRMSOffence::with([
+        $query = HRMSOffence::with([
             'branch',
             'staff',
             'offenceType',
             'actionTaken',
             'creator',
             'updater'
-        ])->get();
+        ]);
 
-        return response()->json($offences);
+        if ($request->filled('offence_type_id')) {
+            $query->where('hrms_offence_type_id', $request->input('offence_type_id'));
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('issue_date', '>=', $request->input('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('issue_date', '<=', $request->input('date_to'));
+        }
+
+        if ($request->filled('employee')) {
+            $query->whereHas('staff', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->input('employee') . '%');
+            });
+        }
+
+        if ($request->input('show_deleted')) {
+            $query->withTrashed(); // assuming soft deletes
+        }
+
+        $offences = $query->get();
+
+        return HRMSOffenceResource::collection($offences)->response()->setStatusCode(200);
     }
 
     /**

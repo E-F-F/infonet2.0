@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Branch; // Assuming Branch model is in App\Models or similar
+use DateTimeInterface;
 /**
  * HRMSOffence Model
  *
@@ -112,5 +113,14 @@ class HRMSOffence extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(HRMSStaff::class, 'updated_by');
+    }
+    /**
+     * Date.
+     *
+     * @return void
+     */
+    public function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d');
     }
 }

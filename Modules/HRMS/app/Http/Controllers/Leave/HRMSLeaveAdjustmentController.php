@@ -12,6 +12,7 @@ use Modules\HRMS\Models\HRMSLeaveType; // Needed for custom validation
 use Illuminate\Validation\Rule; // Needed for unique rule in update (though not used here directly)
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Modules\HRMS\Transformers\HRMSLeaveAdjustmentResource;
 
 /**
  * HRMSLeaveRankController
@@ -30,11 +31,7 @@ class HRMSLeaveAdjustmentController extends Controller
     {
         $adjustments = HRMSLeaveAdjustment::with(['staff', 'leaveType', 'adjustmentReason'])->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Leave adjustments retrieved successfully.',
-            'data' => $adjustments,
-        ]);
+        return HRMSLeaveAdjustmentResource::collection($adjustments)->response()->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -90,11 +87,12 @@ class HRMSLeaveAdjustmentController extends Controller
     {
         $adjustment = HRMSLeaveAdjustment::with(['staff', 'leaveType', 'adjustmentReason'])->findOrFail($id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Leave adjustment retrieved successfully.',
-            'data' => $adjustment,
-        ]);
+        return HRMSLeaveAdjustmentResource::make($adjustment)->response()->setStatusCode(Response::HTTP_OK);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Leave adjustment retrieved successfully.',
+        //     'data' => $adjustment,
+        // ]);
     }
 
     /**

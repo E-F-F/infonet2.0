@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use DateTimeInterface;
 /**
  * HRMSEvent Model
  *
@@ -71,5 +72,14 @@ class HRMSEvent extends Model
     public function eventType(): BelongsTo
     {
         return $this->belongsTo(HRMSEventType::class, 'hrms_event_type_id');
+    }
+    /**
+     * Date.
+     *
+     * @return void
+     */
+    public function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d');
     }
 }
