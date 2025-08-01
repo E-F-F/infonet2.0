@@ -39,7 +39,7 @@ class CRMSPeopleController extends Controller
 
             // Required Fields based on your schema
             'customer_name' => 'required|string',
-            'sst_reg_no' => 'required|string',
+            'sst_reg_no' => 'required|string', 
             'gst_reg_no' => 'required|string',
             'phone_no' => 'required|string',
             'primary_address' => 'required|string',
