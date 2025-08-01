@@ -13,6 +13,8 @@ class CRMSPeopleController extends Controller
      */
     public function index(Request $request)
     {
+        $per_page = $request->per_page ?? 10;
+
         $peoples = CRMSPeople::query()
             ->when(!is_null($request->branch_id), fn($q, $branchId) => $q->where('branch_id', $branchId))
             ->when(!is_null($request->name), fn($q, $name) => $q->where('customer_name', 'like', "%$name%"))
@@ -22,10 +24,21 @@ class CRMSPeopleController extends Controller
             ->when(!is_null($request->chassis_no), fn($q, $chassisNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('chassis_no', 'like', "%$chassisNo%")))
             ->when(!is_null($request->engine_no), fn($q, $engineNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('engine_no', 'like', "%$engineNo%")))
             ->when(!is_null($request->stock_no), fn($q, $stockNo) => $q->whereHas('vehicleInfo', fn($q) => $q->where('stock_no', 'like', "%$stockNo%")))
-            ->with('vehicleInfo')
-            ->get();
+            ->with([
+                'vehicleInfo',
+                'branch:id,name',
+                'corporateGroup:id,name',
+                'race:id,name',
+                'income:id,name',
+                'businessNature:id,name',
+                'occupation:id,name',
+                'staff:id,name',
+            ])
+            ->paginate($per_page); // 👈 pagination
+
         return response()->json($peoples);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -39,7 +52,7 @@ class CRMSPeopleController extends Controller
 
             // Required Fields based on your schema
             'customer_name' => 'required|string',
-            'sst_reg_no' => 'required|string', 
+            'sst_reg_no' => 'required|string',
             'gst_reg_no' => 'required|string',
             'phone_no' => 'required|string',
             'primary_address' => 'required|string',

@@ -348,6 +348,8 @@ class DatabaseSeeder extends Seeder
 
             // If you still need to call other module seeders (e.g., IMSDatabaseSeeder), uncomment the line below:
             // $this->call(\Modules\IMS\Database\Seeders\IMSDatabaseSeeder::class);
+            $this->call(\Modules\IMS\Database\Seeders\IMSDatabaseSeeder::class);
+            $this->call(\Modules\CRMS\Database\Seeders\CRMSDatabaseSeeder::class);
         });
     }
 }

@@ -15,29 +15,34 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->timestamps(); // <-- This line adds created_at & updated_at
         });
 
         Schema::create('crms_people_race', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->timestamps(); // <-- This line adds created_at & updated_at
         });
         Schema::create('crms_people_occupation', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->timestamps(); // <-- This line adds created_at & updated_at
         });
 
         Schema::create('crms_business_nature', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->timestamps(); // <-- This line adds created_at & updated_at
         });
 
         Schema::create('crms_people_income', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->boolean('is_active')->default(true);
+            $table->timestamps(); // <-- This line adds created_at & updated_at
         });
 
         Schema::create('crms_people', function (Blueprint $table) {

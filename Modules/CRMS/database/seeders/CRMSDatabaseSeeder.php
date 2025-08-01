@@ -3,6 +3,9 @@
 namespace Modules\CRMS\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\CRMS\Models\CRMSBusinessNature;
+use Modules\CRMS\Models\CRMSCorporateGroup;
+use Modules\CRMS\Models\CRMSPeopleIncome;
 use Modules\CRMS\Models\CRMSPeopleOccupation;
 use Modules\CRMS\Models\CRMSPeopleRace;
 
@@ -13,34 +16,6 @@ class CRMSDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        CRMSPeopleRace::create([
-            'name' => 'CHINESE',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'MALAY',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'INDIAN',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'KADAZAN - DUSUN',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'SINO KADAZAN',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'IBAN',
-            'is_active' => true,
-        ]);
-        CRMSPeopleRace::create([
-            'name' => 'UM - GENERAL RACE',
-            'is_active' => true,
-        ]);
         $occupations = [
             "Accountant",
             "Account Executive",
@@ -178,6 +153,69 @@ class CRMSDatabaseSeeder extends Seeder
         foreach ($occupations as $occupation) {
             CRMSPeopleOccupation::create([
                 'name' => $occupation,
+                'is_active' => true,
+            ]);
+        }
+
+        $raceNames = [
+            'CHINESE',
+            'MALAY',
+            'INDIAN',
+            'KADAZAN - DUSUN',
+            'SINO KADAZAN',
+            'IBAN',
+            'UM - GENERAL RACE',
+        ];
+
+        foreach ($raceNames as $name) {
+            CRMSPeopleRace::create([
+                'name' => $name,
+                'is_active' => true,
+            ]);
+        }
+
+        $corporateGroups = [
+            "Teck Guan Group",
+            "Sime Darby",
+            "IOI",
+            "Sawit Kinabalu",
+            "Hap Seng",
+            "TSH"
+        ];
+
+        foreach ($corporateGroups as $corporateGroup) {
+            CRMSCorporateGroup::create([
+                'name' => $corporateGroup,
+                'is_active' => true,
+            ]);
+        }
+
+        $businessNatures = [
+            "Information Technology Services",
+            "Retail and Trading",
+            "Construction and Engineering",
+            "Logistics and Transportation",
+            "Food and Beverage Services",
+        ];
+
+        foreach ($businessNatures as $businessNature) {
+            CRMSBusinessNature::create([
+                'name' => $businessNature,
+                'is_active' => true,
+            ]);
+        }
+
+
+        $peopleIncomes = [
+            "< RM 4000",
+            "RM 4001 < RM 8000",
+            "RM 8001 < RM 15000",
+            "> RM 15000",
+        ];
+
+        foreach ($peopleIncomes as $peopleIncome) {
+            CRMSPeopleIncome::create([
+                'name' => $peopleIncome,
                 'is_active' => true,
             ]);
         }
