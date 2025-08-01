@@ -36,19 +36,29 @@ class CRMSPeopleController extends Controller
             'branch_id' => 'nullable|exists:branch,id',
             'status' => 'nullable|string',
             'under_company_registration' => 'nullable|boolean',
-            'customer_name' => 'nullable|string',
+
+            // Required Fields based on your schema
+            'customer_name' => 'required|string',
+            'sst_reg_no' => 'required|string',
+            'gst_reg_no' => 'required|string',
+            'phone_no' => 'required|string',
+            'primary_address' => 'required|string',
+            'primary_postcode' => 'required|string',
+            'primary_city' => 'required|string',
+            'primary_state' => 'required|string',
+            'primary_country' => 'required|string',
+
+            // Optional Fields
             'company_name' => 'nullable|string',
             'crms_corporate_group_id' => 'nullable|exists:crms_corporate_group,id',
             'id_type' => 'nullable|string',
             'id_number' => 'nullable|string',
             'tin' => 'nullable|string',
-            'sst_reg_no' => 'nullable|string',
-            'sa' => 'nullable|exists:hrms_staff,id',
-            'telephone_o' => 'nullable|string',
-            'telephone_h' => 'nullable|string',
-            'owner_hp_no' => 'nullable|string',
+            'hrms_staff_id' => 'nullable|exists:hrms_staff,id',
+            'office_no' => 'nullable|string',
+            'home_no' => 'nullable|string',
             'user_name' => 'nullable|string',
-            'user_hp_no' => 'nullable|string',
+            'user_phone_no' => 'nullable|string',
             'fax_no' => 'nullable|string',
             'email' => 'nullable|email',
             'postal_address' => 'nullable|string',
@@ -56,23 +66,18 @@ class CRMSPeopleController extends Controller
             'postal_city' => 'nullable|string',
             'postal_state' => 'nullable|string',
             'postal_country' => 'nullable|string',
-            'primary_address' => 'nullable|string',
-            'primary_postcode' => 'nullable|string',
-            'primary_city' => 'nullable|string',
-            'primary_state' => 'nullable|string',
-            'primary_country' => 'nullable|string',
             'zone' => 'nullable|string',
             'city' => 'nullable|string',
             'state' => 'nullable|string',
             'dob' => 'nullable|date',
-            'race' => 'nullable|exists:crms_people_race,id',
+            'crms_people_race_id' => 'nullable|exists:crms_people_race,id',
             'religion' => 'nullable|string',
-            'monthly_house_income' => 'nullable|exists:crms_people_income,id',
+            'crms_people_income_id' => 'nullable|exists:crms_people_income,id',
             'marital_status' => 'nullable|string',
             'company_size' => 'nullable|string',
             'sector' => 'nullable|string',
-            'nature_of_business' => 'nullable|exists:crms_business_nature,id',
-            'occupation' => 'nullable|exists:crms_people_occupation,id',
+            'crms_business_nature_id' => 'nullable|exists:crms_business_nature,id',
+            'crms_people_occupation_id' => 'nullable|exists:crms_people_occupation,id',
             'grading' => 'nullable|string',
             'is_corporate' => 'boolean',
             'lifestyle_interest' => 'nullable|string',
@@ -82,11 +87,18 @@ class CRMSPeopleController extends Controller
             'terms' => 'nullable|string',
             'price_scheme' => 'nullable|string',
             'notes' => 'nullable|string',
+            'log' => 'nullable|string',
         ]);
 
         $people = CRMSPeople::create($validated);
-        return response()->json($people, 201);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Customer added successfully.',
+            'data' => $people
+        ], 201);
     }
+
 
     /**
      * Show the specified resource.

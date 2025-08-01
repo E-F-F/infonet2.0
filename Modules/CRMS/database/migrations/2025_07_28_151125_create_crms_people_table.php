@@ -91,8 +91,8 @@ return new class extends Migration
             $table->string('link_customer_type')->nullable();
             $table->string('terms')->nullable();
             $table->string('price_scheme')->nullable();
-            $table->text('notes');
-            $table->text('log');
+            $table->text('notes')->nullable();
+            $table->text('log')->nullable();
             $table->timestamps();
         });
 
@@ -111,7 +111,8 @@ return new class extends Migration
             $table->string('chassis_no')->nullable();
             $table->string('engine_no')->nullable();
             $table->string('manufacture_year')->nullable();
-            $table->foreignId('make_model_id')->nullable()->constrained('make_model')->onDelete('cascade');
+            $table->foreignId('ims_vehicle_make_id')->nullable()->constrained('ims_vehicle_make')->onDelete('cascade');
+            $table->foreignId('ims_vehicle_model_id')->nullable()->constrained('ims_vehicle_model')->onDelete('cascade');
             $table->string('type')->nullable();
             $table->string('rec_net_sp')->nullable();
             $table->string('accesories_otrCost')->nullable();
@@ -170,8 +171,14 @@ return new class extends Migration
         });
         Schema::create('crms_people_visiting_record', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('crms_people_marketing_info_id')->nullable()->constrained('crms_people_marketing_info')->onDelete('cascade');
+            $table->foreignId('crms_people_marketing_info_id')
+                ->nullable()
+                ->constrained('crms_people_marketing_info', 'id')
+                ->onDelete('cascade')
+                ->index()
+                ->name('fk_visiting_marketing'); // 👈 Custom short name
         });
+
 
         Schema::create('crms_quotation', function (Blueprint $table) {
             $table->id();
