@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 use Carbon\Carbon;
 use Exception;
+use Modules\HRMS\Transformers\HRMSLeaveResource;
 
 /**
  * HRMSLeaveController
@@ -47,17 +48,19 @@ class HRMSLeaveController extends Controller
             'rejecter'
         ])->paginate(10);
 
-        return response()->json([
-            'data' => $leaves->items(),
-            'pagination' => [
-                'total' => $leaves->total(),
-                'per_page' => $leaves->perPage(),
-                'current_page' => $leaves->currentPage(),
-                'last_page' => $leaves->lastPage(),
-                'from' => $leaves->firstItem(),
-                'to' => $leaves->lastItem()
-            ]
-        ]);
+        // return response()->json([
+        //     'data' => $leaves->items(),
+        //     'pagination' => [
+        //         'total' => $leaves->total(),
+        //         'per_page' => $leaves->perPage(),
+        //         'current_page' => $leaves->currentPage(),
+        //         'last_page' => $leaves->lastPage(),
+        //         'from' => $leaves->firstItem(),
+        //         'to' => $leaves->lastItem()
+        //     ]
+        // ]);
+
+        return HRMSLeaveResource::collection($leaves);
     }
 
     /**
@@ -78,7 +81,7 @@ class HRMSLeaveController extends Controller
             'rejecter'
         ])->findOrFail($id);
 
-        return response()->json($leave);
+        return HRMSLeaveResource::make($leave);
     }
 
     /**

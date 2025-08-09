@@ -40,7 +40,7 @@ class HRMSTrainingController extends Controller
             'trainingType',
             'trainingAwardType',
             'participants.staff' // Load staff details for each participant
-        ])->get();
+        ])->paginate(10); // Paginate results for better performance
 
         return response()->json($trainings);
     }
