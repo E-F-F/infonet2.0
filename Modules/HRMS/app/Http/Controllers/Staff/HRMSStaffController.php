@@ -79,8 +79,8 @@ class HRMSStaffController extends Controller
             return DB::transaction(function () use ($request) {
                 $validatedData = $request->validate([
                     // StaffAuth Validation
-                    'auth.username' => 'required|string|max:255|unique:staff_auth,username',
-                    'auth.password' => 'required|string|min:8',
+                    'auth.username' => 'nullable|string|max:255|unique:staff_auth,username',
+                    'auth.password' => 'nullable|string|min:8',
                     'auth.is_active' => 'boolean',
 
                     // HRMSStaffPersonal Validation
@@ -148,8 +148,8 @@ class HRMSStaffController extends Controller
                     'employment.notice_period' => 'nullable|integer|min:0',
 
                     // SystemAccess linkage
-                    'system_access_id' => 'nullable|array',
-                    'system_access_id.*' => 'exists:system_access,id',
+                    // 'system_access_id' => 'nullable|array',
+                    // 'system_access_id.*' => 'exists:system_access,id',
 
 
                     // Dependent Children Validation (New Section)
@@ -243,12 +243,12 @@ class HRMSStaffController extends Controller
                         'hrms_staff_employment_id' => $staffEmployment->id,
                     ]);
 
-                    foreach ($validatedData['system_access_id'] as $accessId) {
-                        StaffAccess::create([
-                            'staff_auth_id' => $staffAuth->id,
-                            'system_access_id' => $accessId,
-                        ]);
-                    }
+                    // foreach ($validatedData['system_access_id'] as $accessId) {
+                    //     StaffAccess::create([
+                    //         'staff_auth_id' => $staffAuth->id,
+                    //         'system_access_id' => $accessId,
+                    //     ]);
+                    // }
 
                     // 7. Create HRMSStaffDependentChild records (NEW LOGIC)
                     if (isset($validatedData['children']) && is_array($validatedData['children'])) {

@@ -73,9 +73,9 @@ class HRMSEventController extends Controller
             'title'              => ['required', 'string', 'max:255'],
             'start_date'         => ['required', 'date'],
             'end_date'           => ['required', 'date', 'after_or_equal:start_date'],
-            'event_company'      => ['required', 'string', 'max:255'],
-            'event_branch'       => ['required', 'string', 'max:255'],
-            'event_venue'        => ['required', 'string', 'max:255'],
+            'event_company'      => ['nullable', 'string', 'max:255'],
+            'event_branch'       => ['nullable', 'string', 'max:255'],
+            'event_venue'        => ['nullable', 'string', 'max:255'],
             'remarks'            => ['nullable', 'string'],
             'is_active'          => ['boolean'], // Added validation for is_active
         ]);
