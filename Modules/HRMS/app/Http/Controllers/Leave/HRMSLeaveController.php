@@ -624,4 +624,24 @@ class HRMSLeaveController extends Controller
             $start->addDay();
         }
     }
+
+    public function getLeavesByStaff($staffId)
+    {
+        try {
+            // Get leaves for the staff, eager load relationships if needed
+            $leaves = HRMSLeave::with(['leaveType', 'staff'])
+                ->where('hrms_staff_id', $staffId)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return HRMSLeaveResource::collection($leaves)
+                ->response()
+                ->setStatusCode(Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to fetch leaves for staff.',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
