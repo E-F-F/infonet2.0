@@ -155,4 +155,14 @@ class HRMSLeaveAdjustmentController extends Controller
             'data' => null,
         ], Response::HTTP_NO_CONTENT);
     }
+
+    public function getLeaveAdjustmentsByStaff(int $staffId): JsonResponse
+    {
+        $adjustments = HRMSLeaveAdjustment::with(['leaveType', 'adjustmentReason'])
+            ->where('hrms_staff_id', $staffId)
+            ->get();
+
+        return HRMSLeaveAdjustmentResource::collection($adjustments)->response()->setStatusCode(Response::HTTP_OK);
+    }
+
 }

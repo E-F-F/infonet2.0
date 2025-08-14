@@ -85,6 +85,7 @@ class HRMSStaffController extends Controller
 
                     // HRMSStaffPersonal Validation
                     'personal.firstName' => 'required|string|max:255',
+                    'personal.middleName' => 'required|string|max:255',
                     'personal.lastName' => 'required|string|max:255',
                     'personal.fullName' => 'nullable|string|max:255',
                     'personal.dob' => 'nullable|date',
@@ -171,6 +172,7 @@ class HRMSStaffController extends Controller
                     // 3. Create HRMSStaffPersonal record
                     $staffPersonal = HRMSStaffPersonal::create([
                         'firstName' => $validatedData['personal']['firstName'],
+                        'middleName' => $validatedData['personal']['middleName'],
                         'lastName' => $validatedData['personal']['lastName'],
                         'fullName' => $validatedData['personal']['fullName'] ?? ($validatedData['personal']['firstName'] . ' ' . $validatedData['personal']['lastName']),
                         'dob' => $validatedData['personal']['dob'] ?? null,
@@ -334,6 +336,7 @@ class HRMSStaffController extends Controller
 
                     // HRMSStaffPersonal Validation
                     'personal.firstName' => 'sometimes|required|string|max:255',
+                    'personal.middleName' => 'sometimes|required|string|max:255',
                     'personal.lastName' => 'sometimes|required|string|max:255',
                     'personal.fullName' => 'nullable|string|max:255', // Nullable means it can be explicitly set to null
                     'personal.dob' => 'nullable|date',

@@ -251,4 +251,42 @@ class HRMSLeaveEntitlementController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Get all leave entitlements for a specific staff.
+     *
+     * @param int $staffId The ID of the staff.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getByStaff($staffId)
+    {
+        // Validate if staff exists
+        $staffExists = \Modules\HRMS\Models\HRMSStaff::where('id', $staffId)->exists();
+
+        if (!$staffExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Staff not found.'
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        // Fetch leave entitlements for the staff
+        $leaveEntitlements = HRMSLeaveEntitlement::with('leaveType')
+            ->where('hrms_staff_id', $staffId)
+            ->orderBy('year', 'desc')
+            ->paginate(10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $leaveEntitlements->items(),
+            'pagination' => [
+                'total' => $leaveEntitlements->total(),
+                'per_page' => $leaveEntitlements->perPage(),
+                'current_page' => $leaveEntitlements->currentPage(),
+                'last_page' => $leaveEntitlements->lastPage(),
+                'from' => $leaveEntitlements->firstItem(),
+                'to' => $leaveEntitlements->lastItem()
+            ]
+        ], Response::HTTP_OK);
+    }
 }

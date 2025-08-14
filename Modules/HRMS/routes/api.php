@@ -44,6 +44,9 @@ Route::middleware('module.access:hrms')->group(function () {
         Route::post('/staff/update/{id}', [HRMSStaffController::class, 'updateStaff']);
         Route::get('/staff-list', [HRMSStaffController::class, 'simpleStaffList']);
         Route::get('/staff/{staffId}/leaves', [HRMSLeaveController::class, 'getLeavesByStaff']);
+        Route::get('/staff/{staffId}/leave-adjustments', [HRMSLeaveAdjustmentController::class, 'getLeaveAdjustmentsByStaff']);
+        Route::get('/staff/{staffId}/leave-entitlements', [HRMSLeaveEntitlementController::class, 'getByStaff']);
+
 
         Route::prefix('hrms')->group(function () {
             // Staff Related Api
