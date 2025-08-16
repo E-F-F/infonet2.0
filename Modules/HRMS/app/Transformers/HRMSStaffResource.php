@@ -94,6 +94,7 @@ class HRMSStaffResource extends JsonResource
                 return [
                     'branch_id' => $this->employment->branch_id,
                     'hrms_designation_id' => $this->employment->hrms_designation_id,
+                    'department' => $this->employment->designation->department->name ?? null,
                     'hrms_leave_rank_id' => $this->employment->hrms_leave_rank_id,
                     'hrms_pay_group_id' => $this->employment->hrms_pay_group_id,
                     'hrms_appraisal_type_id' => $this->employment->hrms_appraisal_type_id,
