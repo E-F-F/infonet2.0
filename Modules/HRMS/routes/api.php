@@ -32,6 +32,8 @@ use Modules\HRMS\Models\HRMSAttendanceStation;
 use Modules\HRMS\Http\Controllers\Staff\HRMSMaritalstatusController;
 use Modules\HRMS\Http\Controllers\Payroll\HRMSAppraisalTypeController;
 use Modules\HRMS\Http\Controllers\Payroll\HRMSPayGroupController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSStaffRosterGroupAssignmentController;
+use Modules\HRMS\Http\Controllers\Staff\HRMSStaffQualificationController;
 
 // HRMS Module Routes - require 'hrms' access
 Route::middleware('module.access:hrms')->group(function () {
@@ -46,6 +48,11 @@ Route::middleware('module.access:hrms')->group(function () {
         Route::get('/staff/{staffId}/leaves', [HRMSLeaveController::class, 'getLeavesByStaff']);
         Route::get('/staff/{staffId}/leave-adjustments', [HRMSLeaveAdjustmentController::class, 'getLeaveAdjustmentsByStaff']);
         Route::get('/staff/{staffId}/leave-entitlements', [HRMSLeaveEntitlementController::class, 'getByStaff']);
+        Route::get('/staff/{staffId}/roster-groups', [HRMSStaffRosterGroupAssignmentController::class, 'getByStaff']);
+        Route::prefix('/staff/{staffId}/qualifications')->group(function () {
+            Route::get('/', [HRMSStaffQualificationController::class, 'getByStaff']);
+            Route::post('/', [HRMSStaffQualificationController::class, 'storeForStaff']);
+        });
 
 
         Route::prefix('hrms')->group(function () {
@@ -82,6 +89,7 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::get('trainings/{id}', [HRMSTrainingController::class, 'show']);
             Route::put('trainings/{id}', [HRMSTrainingController::class, 'update']);
             Route::delete('trainings/{id}', [HRMSTrainingController::class, 'destroy']);
+            Route::get('/training/type/{id}/employees', [HRMSTrainingController::class, 'employeesByTrainingType']);
 
 
             // Offfences Related API
@@ -149,6 +157,8 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::apiResource('roster-group', HRMSRosterGroupController::class);
 
             Route::apiResource('roster-shift', HRMSRosterShiftController::class);
+
+            Route::apiResource('roster-group-assignments', HRMSStaffRosterGroupAssignmentController::class);
 
 
             Route::post('roster/generate', [HRMSRosterController::class, 'generateForYear']);

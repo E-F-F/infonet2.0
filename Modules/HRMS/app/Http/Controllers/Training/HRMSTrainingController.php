@@ -265,4 +265,42 @@ class HRMSTrainingController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get employees who have attended a specific training type with pagination.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int  $trainingTypeId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function employeesByTrainingType(Request $request, $trainingTypeId)
+    {
+        // Validate training type exists
+        $trainingType = HRMSTrainingType::find($trainingTypeId);
+
+        if (!$trainingType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Training type not found.'
+            ], 404);
+        }
+
+        // Page size (default 10 if not provided)
+        $perPage = $request->get('per_page', 10);
+
+        // Query employees who attended trainings of this type
+        $employees = HRMSStaff::whereHas('trainingParticipants.training.trainingType', function ($q) use ($trainingTypeId) {
+            $q->where('id', $trainingTypeId);
+        })
+            ->with(['trainingParticipants.training' => function ($q) use ($trainingTypeId) {
+                $q->where('hrms_training_type_id', $trainingTypeId);
+            }])
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'training_type' => $trainingType->name ?? null,
+            'data' => $employees
+        ]);
+    }
 }
