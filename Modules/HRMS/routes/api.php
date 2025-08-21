@@ -53,6 +53,8 @@ Route::middleware('module.access:hrms')->group(function () {
             Route::get('/', [HRMSStaffQualificationController::class, 'getByStaff']);
             Route::post('/', [HRMSStaffQualificationController::class, 'storeForStaff']);
         });
+        Route::get('/staff/qualifications/{qualificationId}', [HRMSStaffQualificationController::class, 'show']);
+        Route::post('/staff/qualifications/{qualificationId}', [HRMSStaffQualificationController::class, 'update']);
 
 
         Route::prefix('hrms')->group(function () {

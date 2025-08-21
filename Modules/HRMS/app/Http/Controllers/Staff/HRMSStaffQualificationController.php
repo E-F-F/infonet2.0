@@ -77,4 +77,62 @@ class HRMSStaffQualificationController extends Controller
             'data' => $qualification
         ], 201);
     }
+
+    /**
+     * Get a specific qualification for a staff.
+     */
+    public function show($qualificationId)
+    {
+        $qualification = HRMSStaffQualification::find($qualificationId);
+
+        if (!$qualification) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Qualification not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $qualification
+        ], 200);
+    }
+
+    /**
+     * Update a qualification .
+     */
+    public function update(Request $request, $qualificationId)
+    {
+        $qualification = HRMSStaffQualification::find($qualificationId);
+
+        if (!$qualification) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Qualification not found'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'qualification' => 'required|string|max:255',
+            'institution'   => 'nullable|string|max:255',
+            'start_date'    => 'nullable|date',
+            'end_date'      => 'nullable|date|after_or_equal:start_date',
+            'marks_grade'   => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $qualification->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Qualification updated successfully',
+            'data' => $qualification
+        ], 200);
+    }
 }
