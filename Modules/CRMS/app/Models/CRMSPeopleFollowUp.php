@@ -16,26 +16,35 @@ class CRMSPeopleFollowUp extends Model
     protected $table = 'crms_people_follow_up';
 
     protected $fillable = [
+        'crms_people_booking_id',
+        'status',
         'crms_people_id',
         'date',
-        'type_of_prospect',
+        'prospect_channel',
         'type',
         'vehicle_reg_no',
         'ims_vehicle_make_id',
         'ims_vehicle_model_id',
-        'ims_vehicle_body_type_id',
-        'ims_vehicle_colour_id',
+        'body',
+        'colour',
         'customer_feedback',
         'next_action',
         'next_follow_up_date',
         'potential',
         'manager_comment',
         'notes',
+        'created_by',
+        'updated_by'
     ];
 
     /**
-     * Relationships
+     * Relationships Belongs To
      */
+    public function booking()
+    {
+        return $this->belongsTo(CRMSPeopleBooking::class, 'crms_people_booking_id');
+    }
+
     public function person()
     {
         return $this->belongsTo(CRMSPeople::class, 'crms_people_id');
@@ -49,15 +58,5 @@ class CRMSPeopleFollowUp extends Model
     public function vehicleModel()
     {
         return $this->belongsTo(IMSVehicleModel::class, 'ims_vehicle_model_id');
-    }
-
-    public function vehicleBodyType()
-    {
-        return $this->belongsTo(IMSVehicleBodyType::class, 'ims_vehicle_body_type_id');
-    }
-
-    public function vehicleColour()
-    {
-        return $this->belongsTo(IMSVehicleColour::class, 'ims_vehicle_colour_id');
     }
 }

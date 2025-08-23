@@ -6,27 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Modules\CRMS\Database\Factories\CRMSPeopleRaceFactory;
 
-class CRMSPeopleRace extends Model
+class CRMSPeopleBooking extends Model
 {
     use HasFactory;
+
+    /**
+     * The table associated with the model.
+     */
+    protected $table = 'crms_people_booking';
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'crms_people_follow_up_id',
         'status',
         'sa_remark',
-        'branch_id',
-        'hrms_staff_id',
-        'type',
-        'ims_vehicle_make_id',
-        'ims_vehicle_model_id',
-        'ims_vehicle_colour_id',
-        'ims_vehicle_body_type_id',
-        'remark',
         'status_date',
-        'quotation',
+        'crms_people_quotation_id',
         'vso_no',
         'booking_date',
         'lap_date',
@@ -38,12 +34,10 @@ class CRMSPeopleRace extends Model
     ];
 
     /**
-     * The table associated with the model.
+     * Relationships Belongs To
      */
-    protected $table = 'crms_people_booking';
-
-    public function people()
+    public function quotation()
     {
-        return $this->hasMany(CRMSPeople::class, 'crms_people_race_id');
+        return $this->belongsTo(CRMSPeopleQuotation::class, 'crms_people_quotation_id');
     }
 }
