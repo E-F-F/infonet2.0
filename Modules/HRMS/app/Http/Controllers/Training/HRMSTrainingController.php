@@ -14,6 +14,7 @@ use Modules\HRMS\Models\HRMSTrainingAwardType;
 use Modules\HRMS\Models\HRMSTrainingParticipant;
 use Modules\HRMS\Models\HRMSStaff; // Assuming this model exists for staff validation
 use App\Models\Branch; // Assuming this model exists for branch validation
+use Modules\HRMS\Transformers\HRMSTrainingParticipantResource; // Import the resource transformer
 
 /**
  * HRMSTrainingController
@@ -264,5 +265,48 @@ class HRMSTrainingController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Get employees who have attended a specific training type with pagination.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  int  $trainingTypeId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function employeesByTrainingType(Request $request, $trainingTypeId)
+    {
+        // Validate training type exists
+        $trainingType = HRMSTrainingType::find($trainingTypeId);
+
+        if (!$trainingType) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Training type not found.'
+            ], 404);
+        }
+
+        // Page size (default 10 if not provided)
+        $perPage = $request->get('per_page', 10);
+
+        // Query employees who attended trainings of this type
+        $employees = HRMSStaff::whereHas('trainingParticipants.training', function ($q) use ($trainingTypeId) {
+            $q->where('hrms_training_type_id', $trainingTypeId);
+        })
+            ->with([
+                'trainingParticipants' => function ($q) use ($trainingTypeId) {
+                    $q->whereHas('training', function ($q2) use ($trainingTypeId) {
+                        $q2->where('hrms_training_type_id', $trainingTypeId);
+                    })->with('training'); // ensure only valid trainings are loaded
+                }
+            ])
+            ->paginate($perPage);
+
+
+        return HRMSTrainingParticipantResource::collection($employees)
+            ->additional([
+                'success' => true,
+                'training_type' => $trainingType->name ?? null,
+            ]);
     }
 }

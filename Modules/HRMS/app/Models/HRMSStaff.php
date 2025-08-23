@@ -168,4 +168,17 @@ class HRMSStaff extends Model
     {
         return $this->fullName ?: 'Staff (ID: ' . $this->id . ')';
     }
+
+    /**
+     * Get the staff's qualifications.
+     */
+    public function qualifications(): HasMany
+    {
+        return $this->hasMany(HRMSStaffQualification::class, 'hrms_staff_id');
+    }
+
+    public function trainingParticipants()
+    {
+        return $this->hasMany(HRMSTrainingParticipant::class, 'hrms_staff_id');
+    }
 }
