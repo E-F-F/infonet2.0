@@ -177,6 +177,11 @@ class HRMSStaff extends Model
         return $this->hasMany(HRMSStaffQualification::class, 'hrms_staff_id');
     }
 
+    public function employmentHistory(): HasMany
+    {
+        return $this->hasMany(HRMSStaffEmploymentHistory::class, 'hrms_staff_id');
+    }
+
     public function trainingParticipants()
     {
         return $this->hasMany(HRMSTrainingParticipant::class, 'hrms_staff_id');

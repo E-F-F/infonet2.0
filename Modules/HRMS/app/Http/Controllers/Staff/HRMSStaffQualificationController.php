@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Modules\HRMS\Models\HRMSStaffQualification;
 use Modules\HRMS\Models\HRMSStaff;
+use Modules\HRMS\Models\HRMSStaffEmploymentHistory;
+
 
 class HRMSStaffQualificationController extends Controller
 {
@@ -15,7 +17,13 @@ class HRMSStaffQualificationController extends Controller
      */
     public function getByStaff($staffId)
     {
-        $staff = HRMSStaff::find($staffId);
+        $staff = HRMSStaff::with([
+            'qualifications', 
+            'employmentHistory', 
+            'trainingParticipants' => function ($query) {
+                $query->with('training', 'training.trainingType');
+            }
+            ])->find($staffId);
 
         if (!$staff) {
             return response()->json([
@@ -24,12 +32,9 @@ class HRMSStaffQualificationController extends Controller
             ], 404);
         }
 
-        $qualifications = HRMSStaffQualification::where('hrms_staff_id', $staffId)->get();
-
         return response()->json([
             'status' => true,
-            'staff_id' => $staffId,
-            'data' => $qualifications
+            'data' => $staff
         ], 200);
     }
 
@@ -133,6 +138,114 @@ class HRMSStaffQualificationController extends Controller
             'status' => true,
             'message' => 'Qualification updated successfully',
             'data' => $qualification
+        ], 200);
+    }
+
+     /**
+     * Store new employment history
+     */
+    public function store(Request $request, $staffId)
+    {
+        $validator = Validator::make($request->all(), [
+            'organization' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'comment' => 'nullable|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $staff = HRMSStaff::find($staffId);
+
+        if (!$staff) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Staff not found'
+            ], 404);
+        }
+
+        $history = HRMSStaffEmploymentHistory::create([
+            'hrms_staff_id' => $staffId,
+            'organization' => $request->organization,
+            'position' => $request->position,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'comment' => $request->comment,
+        ]);
+
+        return response()->json([
+            'message' => 'Employment history added successfully',
+            'data' => $history
+        ], 201);
+    }
+
+    /**
+     * Update an employment history record
+     */
+    public function updateEH(Request $request, $id)
+    {
+        $history = HRMSStaffEmploymentHistory::find($id);
+
+        if (!$history) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Employment history not found'
+            ], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'organization' => 'sometimes|required|string|max:255',
+            'position' => 'sometimes|required|string|max:255',
+            'start_date' => 'sometimes|required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'comment' => 'nullable|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $history->update($request->only([
+            'organization',
+            'position',
+            'start_date',
+            'end_date',
+            'comment'
+        ]));
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Employment history updated successfully',
+            'data' => $history
+        ], 200);
+    }
+
+    /**
+     * Show a single employment history record
+     */
+    public function showEH($id)
+    {
+        $history = HRMSStaffEmploymentHistory::find($id);
+
+        if (!$history) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Employment history not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $history
         ], 200);
     }
 }
