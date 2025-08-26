@@ -5,6 +5,7 @@ namespace Modules\CRMS\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\CRMS\Models\CRMSBusinessNature;
 use Modules\CRMS\Models\CRMSCompany;
+use Modules\CRMS\Models\CRMSPeople;
 use Modules\CRMS\Models\CRMSPeopleIncome;
 use Modules\CRMS\Models\CRMSPeopleOccupation;
 use Modules\CRMS\Models\CRMSPeopleRace;
@@ -208,5 +209,104 @@ class CRMSDatabaseSeeder extends Seeder
         foreach ($peopleIncomes as $peopleIncome) {
             CRMSPeopleIncome::firstOrCreate(['name' => $peopleIncome]);
         }
+
+        CRMSPeople::create([
+            // Relations (assuming these IDs exist in their respective tables)
+            'hrms_staff_id' => 1,
+            'crms_company_id' => 1,
+            'crms_people_race_id' => 1,
+            'crms_people_income_id' => 1,
+            'crms_people_occupation_id' => 1,
+            'crms_business_nature_id' => 1,
+
+            // Required Personal Details
+            'customer_name' => 'John Doe',
+            'owner_phone' => '60123456789',
+            'primary_address' => '123 Jalan Telipok',
+            'primary_postcode' => '50450',
+            'primary_city' => 'Kota Kinabalu',
+            'primary_state' => 'Wilayah Persekutuan Kota Kinabalu',
+            'primary_country' => 'Sabah',
+
+            // Optional Fields
+            'people_type' => 'Contact',
+            'people_status' => 'Active',
+            'grading' => 'A',
+            'last_contact_date' => '2025-08-26',
+            'under_company_registration' => false,
+            'id_type' => 'MyKad',
+            'id_number' => '850101-14-5555',
+            'tin' => 'TIN12345',
+            'dob' => '1985-01-01',
+            'home_no' => '03-12345678',
+            'email' => 'john.doe@example.com',
+            'contact_person_name' => null, // or a string value
+            'contact_person_phone' => null,
+            'office_no' => null,
+            'fax_no' => null,
+            'postal_address' => 'PO Box 123',
+            'postal_postcode' => '50450',
+            'postal_city' => 'Kuala Lumpur',
+            'postal_state' => 'Wilayah Persekutuan Kuala Lumpur',
+            'postal_country' => 'Malaysia',
+            'zone' => 'Central',
+            'religion' => 'Islam',
+            'marital_status' => 'Married',
+            'is_corporate' => false,
+            'lifestyle_interest' => 'Outdoor activities, sports cars',
+            'link_customer' => null,
+            'account_terms' => 'Net 30',
+            'price_scheme' => 'Standard',
+        ]);
+
+
+        CRMSPeople::create([
+            // Relations (assuming these IDs exist in their respective tables)
+            'hrms_staff_id' => 1,
+            'crms_company_id' => 1,
+            'crms_people_race_id' => 1,
+            'crms_people_income_id' => 1,
+            'crms_people_occupation_id' => 1,
+            'crms_business_nature_id' => 1,
+
+            // Required Personal Details
+            'customer_name' => 'Feinz Ineffa Mains',
+            'owner_phone' => '60123456789',
+            'primary_address' => '123 Jalan Madang',
+            'primary_postcode' => '50450',
+            'primary_city' => 'Kota Kinabalu',
+            'primary_state' => 'Wilayah Persekutuan Kota Kinabalu',
+            'primary_country' => 'Sabah',
+
+            // Optional Fields
+            'people_type' => 'Prospect',
+            'people_status' => 'Active',
+            'grading' => 'C',
+            'last_contact_date' => '2025-08-26',
+            'under_company_registration' => false,
+            'id_type' => 'MyKad',
+            'id_number' => '850101-14-4444',
+            'tin' => 'TIN12345',
+            'dob' => '1991-01-01',
+            'home_no' => '03-12345678',
+            'email' => 'john.doe@example.com',
+            'contact_person_name' => null, // or a string value
+            'contact_person_phone' => null,
+            'office_no' => null,
+            'fax_no' => null,
+            'postal_address' => 'PO Box 123',
+            'postal_postcode' => '50450',
+            'postal_city' => 'Kuala Lumpur',
+            'postal_state' => 'Wilayah Persekutuan Kuala Lumpur',
+            'postal_country' => 'Malaysia',
+            'zone' => 'Central',
+            'religion' => 'Islam',
+            'marital_status' => 'Married',
+            'is_corporate' => false,
+            'lifestyle_interest' => 'Outdoor activities, sports cars',
+            'link_customer' => null,
+            'account_terms' => 'Net 30',
+            'price_scheme' => 'Standard',
+        ]);
     }
 }

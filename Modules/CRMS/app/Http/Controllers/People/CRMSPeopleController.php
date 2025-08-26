@@ -14,44 +14,51 @@ class CRMSPeopleController extends Controller
      */
     public function index(Request $request)
     {
-        $per_page = $request->per_page ?? 10;
-        $activePassive = $request->active_passive; // e.g., 'Active' or 'Passive'
-        $name = $request->name; // Partial or full name search
-        $lastContactFrom = $request->last_contact_from; // e.g., 2025-01-01
-        $lastContactTo = $request->last_contact_to; // e.g., 2025-08-31
+        try {
+            $per_page = $request->per_page ?? 10;
+            $activePassive = $request->active_passive; // e.g., 'Active' or 'Passive'
+            $name = $request->name; // Partial or full name search
+            $lastContactFrom = $request->last_contact_from; // e.g., 2025-01-01
+            $lastContactTo = $request->last_contact_to; // e.g., 2025-08-31
 
-        $people = CRMSPeople::select([
-            'id',
-            'customer_name',
-            'people_status',
-            'people_type',
-            'last_contact_date',
-            'owner_phone',
-            'crms_company_id',
-            'hrms_staff_id'
-        ])
-            ->when($activePassive, function ($query, $activePassive) {
-                return $query->where('people_status', $activePassive);
-            })
-            ->when($name, function ($query, $name) {
-                return $query->where('customer_name', 'like', "%{$name}%");
-            })
-            ->when($lastContactFrom && $lastContactTo, function ($query) use ($lastContactFrom, $lastContactTo) {
-                return $query->whereBetween('last_contact_date', [$lastContactFrom, $lastContactTo]);
-            })
-            ->when($lastContactFrom && !$lastContactTo, function ($query) use ($lastContactFrom) {
-                return $query->whereDate('last_contact_date', '>=', $lastContactFrom);
-            })
-            ->when(!$lastContactFrom && $lastContactTo, function ($query) use ($lastContactTo) {
-                return $query->whereDate('last_contact_date', '<=', $lastContactTo);
-            })
-            ->with([
-                'company:id,company_name',
-                'salesperson:id,name'
+            $people = CRMSPeople::select([
+                'id',
+                'customer_name',
+                'people_status',
+                'people_type',
+                'last_contact_date',
+                'owner_phone',
+                'crms_company_id',
+                'hrms_staff_id'
             ])
-            ->paginate($per_page);
+                ->when($activePassive, function ($query, $activePassive) {
+                    return $query->where('people_status', $activePassive);
+                })
+                ->when($name, function ($query, $name) {
+                    return $query->where('customer_name', 'like', "%{$name}%");
+                })
+                ->when($lastContactFrom && $lastContactTo, function ($query) use ($lastContactFrom, $lastContactTo) {
+                    return $query->whereBetween('last_contact_date', [$lastContactFrom, $lastContactTo]);
+                })
+                ->when($lastContactFrom && !$lastContactTo, function ($query) use ($lastContactFrom) {
+                    return $query->whereDate('last_contact_date', '>=', $lastContactFrom);
+                })
+                ->when(!$lastContactFrom && $lastContactTo, function ($query) use ($lastContactTo) {
+                    return $query->whereDate('last_contact_date', '<=', $lastContactTo);
+                })
+                ->with([
+                    'company:id,company_name',
+                    'staff.personal:id,fullName'
+                ])
+                ->paginate($per_page);
 
-        return response()->json($people);
+            return response()->json($people);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while fetching data.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
