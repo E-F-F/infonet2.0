@@ -4,7 +4,7 @@ namespace Modules\CRMS\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\CRMS\Models\CRMSBusinessNature;
-use Modules\CRMS\Models\CRMSCorporateGroup;
+use Modules\CRMS\Models\CRMSCompany;
 use Modules\CRMS\Models\CRMSPeopleIncome;
 use Modules\CRMS\Models\CRMSPeopleOccupation;
 use Modules\CRMS\Models\CRMSPeopleRace;
@@ -16,6 +16,7 @@ class CRMSDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed predefined occupations
         $occupations = [
             "Accountant",
             "Account Executive",
@@ -151,12 +152,10 @@ class CRMSDatabaseSeeder extends Seeder
         ];
 
         foreach ($occupations as $occupation) {
-            CRMSPeopleOccupation::create([
-                'name' => $occupation,
-                'is_active' => true,
-            ]);
+            CRMSPeopleOccupation::firstOrCreate(['name' => $occupation]);
         }
 
+        // Seed predefined races
         $raceNames = [
             'CHINESE',
             'MALAY',
@@ -168,28 +167,24 @@ class CRMSDatabaseSeeder extends Seeder
         ];
 
         foreach ($raceNames as $name) {
-            CRMSPeopleRace::create([
-                'name' => $name,
-                'is_active' => true,
-            ]);
+            CRMSPeopleRace::firstOrCreate(['name' => $name]);
         }
 
+        // Seed predefined corporate groups
         $corporateGroups = [
             "Teck Guan Group",
             "Sime Darby",
             "IOI",
             "Sawit Kinabalu",
             "Hap Seng",
-            "TSH"
+            "TSH",
         ];
 
         foreach ($corporateGroups as $corporateGroup) {
-            CRMSCorporateGroup::create([
-                'name' => $corporateGroup,
-                'is_active' => true,
-            ]);
+            CRMSCompany::firstOrCreate(['company_name' => $corporateGroup]);
         }
 
+        // Seed predefined business natures
         $businessNatures = [
             "Information Technology Services",
             "Retail and Trading",
@@ -199,13 +194,10 @@ class CRMSDatabaseSeeder extends Seeder
         ];
 
         foreach ($businessNatures as $businessNature) {
-            CRMSBusinessNature::create([
-                'name' => $businessNature,
-                'is_active' => true,
-            ]);
+            CRMSBusinessNature::firstOrCreate(['name' => $businessNature]);
         }
 
-
+        // Seed predefined income brackets
         $peopleIncomes = [
             "< RM 4000",
             "RM 4001 < RM 8000",
@@ -214,10 +206,7 @@ class CRMSDatabaseSeeder extends Seeder
         ];
 
         foreach ($peopleIncomes as $peopleIncome) {
-            CRMSPeopleIncome::create([
-                'name' => $peopleIncome,
-                'is_active' => true,
-            ]);
+            CRMSPeopleIncome::firstOrCreate(['name' => $peopleIncome]);
         }
     }
 }

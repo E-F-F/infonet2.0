@@ -63,6 +63,9 @@ class CRMSPeople extends Model
         'crms_business_nature_id',
         'is_corporate',
         'lifestyle_interest',
+        'link_customer',
+        'account_terms',
+        'price_scheme',
     ];
 
     /**
