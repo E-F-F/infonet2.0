@@ -35,7 +35,7 @@ class HRMSStaffController extends Controller
         $perPage = (int) $request->input('per_page', 10);
         $perPage = max(1, min($perPage, 100)); // Allow between 1 and 100
 
-        $hrmsStaff = HRMSStaff::with([
+        $query = HRMSStaff::with([
             'auth.staffAccess.systemAccess',
             'personal.children',
             'employment.branch',
@@ -43,7 +43,67 @@ class HRMSStaffController extends Controller
             'employment.leaveRank',
             'employment.payGroup',
             'employment.appraisalType'
-        ])->paginate($perPage);
+        ]);
+
+        // 🔎 Search by name or employee number
+        if ($search = $request->input('search')) {
+            $query->whereHas('personal', function ($q) use ($search) {
+                $q->where('fullName', 'like', "%{$search}%");
+            })->orWhereHas('employment', function ($q) use ($search) {
+                $q->where('employee_number', 'like', "%{$search}%");
+            });
+        }
+
+        // 🏢 Staff group filter
+        if ($staffGroup = $request->input('staff_group')) {
+            $query->whereHas('employment', function ($q) use ($staffGroup) {
+                $q->where('staff_group', $staffGroup);
+            });
+        }
+
+        // 📅 Joining date range
+        if ($from = $request->input('joining_from')) {
+            $query->whereHas('employment', function ($q) use ($from) {
+                $q->whereDate('joining_date', '>=', $from);
+            });
+        }
+        if ($to = $request->input('joining_to')) {
+            $query->whereHas('employment', function ($q) use ($to) {
+                $q->whereDate('joining_date', '<=', $to);
+            });
+        }
+
+        // 📅 Relieving date range
+        if ($from = $request->input('relieving_from')) {
+            $query->whereHas('employment', function ($q) use ($from) {
+                $q->whereDate('relieving_date', '>=', $from);
+            });
+        }
+        if ($to = $request->input('relieving_to')) {
+            $query->whereHas('employment', function ($q) use ($to) {
+                $q->whereDate('relieving_date', '<=', $to);
+            });
+        }
+
+        // 📅 Joining/Relieving date combined
+        if ($from = $request->input('joinrel_from')) {
+            $query->whereHas('employment', function ($q) use ($from) {
+                $q->where(function ($inner) use ($from) {
+                    $inner->whereDate('joining_date', '>=', $from)
+                        ->orWhereDate('relieving_date', '>=', $from);
+                });
+            });
+        }
+        if ($to = $request->input('joinrel_to')) {
+            $query->whereHas('employment', function ($q) use ($to) {
+                $q->where(function ($inner) use ($to) {
+                    $inner->whereDate('joining_date', '<=', $to)
+                        ->orWhereDate('relieving_date', '<=', $to);
+                });
+            });
+        }
+
+        $hrmsStaff = $query->paginate($perPage);
 
         return HRMSStaffResource::collection($hrmsStaff);
     }

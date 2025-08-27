@@ -63,6 +63,64 @@ class HRMSLeaveController extends Controller
         return HRMSLeaveResource::collection($leaves);
     }
 
+    public function getCalendarEvents(Request $request)
+    {
+        $start = $request->query('start');
+        $end   = $request->query('end');
+
+        // Validate
+        if (!$start || !$end) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing start or end parameter',
+            ], 400);
+        }
+
+        try {
+            // Safely parse dates
+            $startDate = $start;
+            $endDate   = $end;
+
+            // Fetch leaves
+            $leaves = HRMSLeave::with(['staff.personal', 'leaveType'])
+                ->where(function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('date_from', [$startDate, $endDate])
+                        ->orWhereBetween('date_to', [$startDate, $endDate])
+                        ->orWhere(function ($q) use ($startDate, $endDate) {
+                            $q->where('date_from', '<=', $startDate)
+                                ->where('date_to', '>=', $endDate);
+                        });
+                })
+                ->get();
+
+            // Map to events
+            $events = $leaves->map(function ($leave) {
+                $dateFrom = $leave->date_from ? \Carbon\Carbon::parse($leave->date_from) : null;
+                $dateTo   = $leave->date_to ? \Carbon\Carbon::parse($leave->date_to) : null;
+
+                return [
+                    'id'        => $leave->id,
+                    'title'     => $leave->leaveType->name ?? 'Leave',
+                    'start'     => $dateFrom?->toDateString(),
+                    'end'       => $dateTo
+                        ? $dateTo->copy()->addDay()->toDateString() // FullCalendar expects exclusive end
+                        : $dateFrom?->toDateString(),
+                    'employee'  => $leave->staff?->personal?->fullName ?? 'Unknown',
+                    'status'    => strtolower($leave->status ?? 'pending'),
+                    'reason'    => $leave->leave_purpose ?? '',
+                ];
+            });
+
+            return response()->json($events);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     /**
      * Display the specified leave.
      *

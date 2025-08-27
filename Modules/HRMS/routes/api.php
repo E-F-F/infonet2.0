@@ -138,7 +138,12 @@ Route::middleware('module.access:hrms')->group(function () {
 
             Route::apiResource('leave-models', HRMSLeaveModelController::class);
 
-            Route::apiResource('leaves', HRMSLeaveController::class);
+            Route::get('leaves', [HRMSLeaveController::class, 'index']);
+            Route::post('leaves', [HRMSLeaveController::class, 'store']);
+            Route::get('leaves/{id}', [HRMSLeaveController::class, 'show']);
+            Route::put('leaves/{id}', [HRMSLeaveController::class, 'update']);
+            Route::delete('leaves/{id}', [HRMSLeaveController::class, 'destroy']);
+            Route::get('leaves-calendar', [HRMSLeaveController::class, 'getCalendarEvents']);
 
             Route::apiResource('leave-entitlements', HRMSLeaveEntitlementController::class);
 
