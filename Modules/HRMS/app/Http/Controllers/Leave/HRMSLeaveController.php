@@ -101,6 +101,7 @@ class HRMSLeaveController extends Controller
                 return [
                     'id'        => $leave->id,
                     'title'     => $leave->leaveType->name ?? 'Leave',
+                    'color'     => $leave->leaveType->background_color ?? '#f0f3f7ff',
                     'start'     => $dateFrom?->toDateString(),
                     'end'       => $dateTo
                         ? $dateTo->copy()->addDay()->toDateString() // FullCalendar expects exclusive end
@@ -112,7 +113,7 @@ class HRMSLeaveController extends Controller
             });
 
             return response()->json($events);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

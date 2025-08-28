@@ -73,6 +73,17 @@ class HRMSEvent extends Model
     {
         return $this->belongsTo(HRMSEventType::class, 'hrms_event_type_id');
     }
+
+    /**
+     * Get the participants for the event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function participants()
+    {
+        return $this->hasMany(HRMSEventParticipant::class, 'hrms_event_id');
+    }
+    
     /**
      * Date.
      *
