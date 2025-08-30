@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Branch;
 use DateTimeInterface;
 /**
  * HRMSEvent Model
@@ -36,7 +37,7 @@ class HRMSEvent extends Model
         'start_date',
         'end_date',
         'event_company',
-        'event_branch',
+        'branch_id',
         'event_venue',
         'remarks',
         'activity_logs',
@@ -65,6 +66,16 @@ class HRMSEvent extends Model
     ];
 
     /**
+     * Get the branch that the training belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    /**
      * Get the event type that the event belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -83,7 +94,7 @@ class HRMSEvent extends Model
     {
         return $this->hasMany(HRMSEventParticipant::class, 'hrms_event_id');
     }
-    
+
     /**
      * Date.
      *

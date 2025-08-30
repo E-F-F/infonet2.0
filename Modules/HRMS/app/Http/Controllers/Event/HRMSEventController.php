@@ -27,7 +27,13 @@ class HRMSEventController extends Controller
             ->when($type, fn($q) => $q->where('hrms_event_type_id', $type))
             ->when($from, fn($q) => $q->whereDate('start_date', '>=', $from))
             ->when($to, fn($q) => $q->whereDate('end_date', '<=', $to))
-            ->with(['eventType', 'participants.staff']) // include participants
+            ->with([
+                'branch' => function ($q) {
+                    $q->select('id', 'code');
+                },
+                'eventType', 
+                'participants.staff'
+                ]) // include participants
             ->latest()
             ->paginate(10);
 
@@ -55,7 +61,7 @@ class HRMSEventController extends Controller
             'start_date'         => ['required', 'date'],
             'end_date'           => ['required', 'date', 'after_or_equal:start_date'],
             'event_company'      => ['nullable', 'string', 'max:255'],
-            'event_branch'       => ['nullable', 'string', 'max:255'],
+            'branch_id'          => ['required', 'integer', 'exists:branch,id'],
             'event_venue'        => ['nullable', 'string', 'max:255'],
             'remarks'            => ['nullable', 'string'],
             'is_active'          => ['boolean'],
@@ -79,7 +85,7 @@ class HRMSEventController extends Controller
                 'start_date',
                 'end_date',
                 'event_company',
-                'event_branch',
+                'branch_id',
                 'event_venue',
                 'remarks',
             ]);

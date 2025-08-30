@@ -38,7 +38,7 @@ class HRMSLeaveController extends Controller
      */
     public function index(Request $request)
     {
-        $leaves = HRMSLeave::with([
+        $query = HRMSLeave::with([
             'branch',
             'staff',
             'leaveType',
@@ -46,19 +46,32 @@ class HRMSLeaveController extends Controller
             'updater',
             'approver',
             'rejecter'
-        ])->paginate(10);
+        ]);
 
-        // return response()->json([
-        //     'data' => $leaves->items(),
-        //     'pagination' => [
-        //         'total' => $leaves->total(),
-        //         'per_page' => $leaves->perPage(),
-        //         'current_page' => $leaves->currentPage(),
-        //         'last_page' => $leaves->lastPage(),
-        //         'from' => $leaves->firstItem(),
-        //         'to' => $leaves->lastItem()
-        //     ]
-        // ]);
+        // Date range filter
+        if ($request->filled('date_from')) {
+            $query->whereDate('date_from', '>=', $request->input('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('date_to', '<=', $request->input('date_to'));
+        }
+
+        // Leave type filter
+        if ($request->filled('leave_type')) {
+            $query->where('leave_type_id', $request->input('leave_type'));
+        }
+
+        // Employee filter
+        if ($request->filled('employee')) {
+            $query->where('staff_id', $request->input('employee'));
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('status', strtoupper($request->input('status')));
+        }
+
+        $leaves = $query->paginate(10)->appends($request->query());
 
         return HRMSLeaveResource::collection($leaves);
     }
@@ -113,7 +126,6 @@ class HRMSLeaveController extends Controller
             });
 
             return response()->json($events);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
