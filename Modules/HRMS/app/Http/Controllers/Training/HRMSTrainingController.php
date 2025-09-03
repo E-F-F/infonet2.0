@@ -33,15 +33,31 @@ class HRMSTrainingController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Eager load relationships for efficient data retrieval
-        $trainings = HRMSTraining::with([
+        $query = HRMSTraining::with([
             'branch',
             'trainingType',
             'trainingAwardType',
-            'participants.staff' // Load staff details for each participant
-        ])->paginate(10); // Paginate results for better performance
+            'participants.staff'
+        ]);
+
+        // Filter by Training Type
+        if ($request->filled('training_type_id')) {
+            $query->where('hrms_training_type_id', $request->input('hrms_training_type_id'));
+        }
+
+        // Filter by Date Range
+        if ($request->filled('date_from')) {
+            $query->whereDate('training_start_date', '>=', $request->input('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('training_end_date', '<=', $request->input('date_to'));
+        }
+
+        $perPage = $request->input('per_page', 10);
+        $trainings = $query->paginate($perPage);
 
         return response()->json($trainings);
     }
