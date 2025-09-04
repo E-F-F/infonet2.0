@@ -51,7 +51,12 @@ class HRMSOffenceController extends Controller
 
         if ($request->filled('employee')) {
             $query->whereHas('staff', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->input('employee') . '%');
+                $q->whereHas('personal', function ($q2) use ($request) {
+                    $q2->where('firstName', 'like', '%' . $request->input('employee') . '%')
+                       ->orWhere('middleName', 'like', '%' . $request->input('employee') . '%')
+                       ->orWhere('lastName', 'like', '%' . $request->input('employee') . '%')
+                       ->orWhere('fullName', 'like', '%' . $request->input('employee') . '%');
+                });
             });
         }
 
@@ -59,7 +64,8 @@ class HRMSOffenceController extends Controller
             $query->withTrashed(); // assuming soft deletes
         }
 
-        $offences = $query->get();
+        $perPage = $request->input('per_page', 10);
+        $offences = $query->latest()->paginate($perPage);
 
         return HRMSOffenceResource::collection($offences)->response()->setStatusCode(200);
     }

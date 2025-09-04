@@ -44,7 +44,9 @@ class HRMSTrainingController extends Controller
 
         // Filter by Training Type
         if ($request->filled('training_type_id')) {
-            $query->where('hrms_training_type_id', $request->input('hrms_training_type_id'));
+            $query->when('training_type_id', function ($q) use ($request) {
+                $q->where('hrms_training_type_id', $request->input('training_type_id'));
+            });
         }
 
         // Filter by Date Range
@@ -55,6 +57,18 @@ class HRMSTrainingController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('training_end_date', '<=', $request->input('date_to'));
         }
+
+        // Sorting
+        $sort = $request->input('sort', 'created_at');
+        $direction = $request->input('direction', 'desc');
+
+        // Whitelist allowed sortable fields
+        $allowedSorts = ['id', 'name', 'training_start_date', 'training_end_date', 'created_at'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'created_at';
+        }
+
+        $query->orderBy($sort, $direction);
 
         $perPage = $request->input('per_page', 10);
         $trainings = $query->paginate($perPage);

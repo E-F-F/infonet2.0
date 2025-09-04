@@ -29,7 +29,13 @@ class HRMSLeaveAdjustmentController extends Controller
      */
     public function index(): JsonResponse
     {
-        $adjustments = HRMSLeaveAdjustment::with(['staff', 'leaveType', 'adjustmentReason'])->get();
+        $perPage = request()->input('per_page', 10);
+        $adjustments = HRMSLeaveAdjustment::with([
+            'staff', 
+            'leaveType', 
+            'adjustmentReason'
+            ])
+            ->paginate($perPage);
 
         return HRMSLeaveAdjustmentResource::collection($adjustments)->response()->setStatusCode(Response::HTTP_OK);
     }

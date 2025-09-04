@@ -22,6 +22,7 @@ class HRMSEventController extends Controller
         $type = $request->input('type');
         $from = $request->input('from');
         $to = $request->input('to');
+        $perPage = $request->input('per_page', 10);
 
         $events = HRMSEvent::when($query, fn($q) => $q->where('title', 'like', "%$query%"))
             ->when($type, fn($q) => $q->where('hrms_event_type_id', $type))
@@ -35,7 +36,7 @@ class HRMSEventController extends Controller
                 'participants.staff'
                 ]) // include participants
             ->latest()
-            ->paginate(10);
+            ->paginate($perPage);
 
         return response()->json($events);
     }
