@@ -32,6 +32,8 @@ class SystemAccess extends Model
         'access_name',
         'branch_id',
         'hrms', // Assuming 'hrms' is a boolean or string representing HRMS access
+        'crms', // Assuming 'crms' is a boolean or string representing CRMS access
+        'ims', // Assuming 'ims' is a boolean or string representing IMS access
     ];
 
     /**
@@ -41,6 +43,8 @@ class SystemAccess extends Model
      */
     protected $casts = [
         'hrms' => 'boolean', // Assuming 'hrms' column stores boolean values
+        'crms' => 'boolean', // Assuming 'crms' column stores boolean values
+        'ims' => 'boolean', // Assuming 'ims' column stores boolean values
     ];
 
     /**

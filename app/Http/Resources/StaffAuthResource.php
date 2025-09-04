@@ -24,6 +24,8 @@ class StaffAuthResource extends JsonResource
                         'access_name' => $system?->access_name,
                         'branch_id' => $system?->branch_id,
                         'hrms' => $system?->hrms,
+                        'crms' => $system?->crms,
+                        'ims' => $system?->ims,
                         // Add others like 'ims', 'fms', etc.
                     ];
                 })
