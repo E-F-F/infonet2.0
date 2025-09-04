@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('access_name');
             $table->foreignId('branch_id')->nullable()->constrained('branch')->onDelete('cascade');
             $table->boolean('hrms')->default(false);
+            $table->boolean('crms')->default(false);
+            $table->boolean('ims')->default(false);
             // $table->boolean('payroll')->default(false);
             // $table->boolean('inventory')->default(false);
             // $table->boolean('accounting')->default(false);
