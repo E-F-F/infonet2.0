@@ -14,9 +14,23 @@ class HRMSLeaveTypeController extends Controller
      *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $leaveTypes = HRMSLeaveType::all();
+        $query = HRMSLeaveType::query();
+
+        // Filtering
+        // if ($request->has('status')) {
+        //     $query->where('status', $request->input('status'));
+        // }
+
+        // if ($request->has('name')) {
+        //     $query->where('name', 'like', '%' . $request->input('name') . '%');
+        // }
+
+        // Pagination
+        $perPage = $request->input('per_page', 10);
+        $leaveTypes = $query->paginate($perPage);
+
         return response()->json([
             'success' => true,
             'message' => 'Leave types retrieved successfully.',

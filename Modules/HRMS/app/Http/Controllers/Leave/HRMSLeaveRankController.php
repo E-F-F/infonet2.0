@@ -21,10 +21,11 @@ class HRMSLeaveRankController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $leaveRanks = HRMSLeaveRank::all();
-        // For API, return JSON data instead of a view
+        $perPage = $request->query('per_page', 10);
+        $query= HRMSLeaveRank::query();
+        $leaveRanks = $query->paginate($perPage);
         return response()->json($leaveRanks);
     }
 

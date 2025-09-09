@@ -58,7 +58,7 @@ class HRMSLeaveController extends Controller
 
         // Leave type filter
         if ($request->filled('leave_type')) {
-            $query->where('leave_type_id', $request->input('leave_type'));
+            $query->when('leave_type', fn($q) => $q->where('hrms_leave_type_id', $request->input('leave_type')));
         }
 
         // Employee filter
@@ -71,10 +71,14 @@ class HRMSLeaveController extends Controller
             $query->where('status', strtoupper($request->input('status')));
         }
 
-        $leaves = $query->paginate(10)->appends($request->query());
+        // Get per-page value from request, default to 10
+        $perPage = $request->input('per_page', 10);
+
+        $leaves = $query->paginate($perPage)->appends($request->query());
 
         return HRMSLeaveResource::collection($leaves);
     }
+
 
     public function getCalendarEvents(Request $request)
     {
